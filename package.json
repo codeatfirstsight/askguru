@@ -1,0 +1,95 @@
+{
+  "name": "askguru",
+  "publisher": "salil",
+  "displayName": "askguru",
+  "description": "Ask questions",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:extension.searchStackoverflow",
+    "onCommand:extension.topPickStackoverflow",
+    "onCommand:extension.signin"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.searchStackoverflow",
+        "title": "Stackoverflow: Search"
+      },
+      {
+        "command": "extension.topPickStackoverflow",
+        "title": "Stackoverflow: Top Pick Questions"
+      },
+      {
+        "command": "extension.signin",
+        "title": "Stackoverflow: Sign In"
+      }
+    ],
+    "configuration": [
+      {
+        "title": "Stackoverflow View",
+        "properties": {
+          "stackoverflow.view.language": {
+            "type": "string",
+            "enum": [
+              "English",
+              "Spanish",
+              "Russian",
+              "Portuguese",
+              "Japanese"
+            ],
+            "default": "English",
+            "description": "Select your preferred language for Stack Overflow.",
+            "scope": "window"
+          },
+          "stackoverflow.view.sort": {
+            "type": "string",
+            "enum": [
+              "Relevance",
+              "Newest",
+              "Active",
+              "Votes"
+            ],
+            "default": "Relevance",
+            "description": "Select your preferred sort type for returned search results.",
+            "scope": "window"
+          }
+        }
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.searchStackoverflow",
+        "key": "ctrl+alt+s",
+        "mac": "ctrl+cmd+s"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/glob": "^8.0.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "eslint": "^8.28.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.1.0",
+    "typescript": "^4.9.3",
+    "@vscode/test-electron": "^2.2.0"
+  }
+}
