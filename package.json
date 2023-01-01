@@ -11,24 +11,42 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:extension.searchStackoverflow",
-    "onCommand:extension.topPickStackoverflow",
-    "onCommand:extension.signin"
+    "onCommand:askguru.searchStackoverflow",
+    "onCommand:askguru.topPickStackoverflow",
+    "onCommand:askguru.signin",
+    "onView:askguru-sidebar"
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "askguru-sidebar-view",
+          "title": "AskGuru",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "askguru-sidebar-view": [
+        {
+          "type": "webview",
+          "id": "askguru-sidebar",
+          "name": "AskGuru",
+          "icon": "media/icon.svg",
+          "contextualTitle": "AskGuru"
+        }
+      ]
+    },
+
     "commands": [
       {
-        "command": "extension.searchStackoverflow",
+        "command": "askguru.searchStackoverflow",
         "title": "Stackoverflow: Search"
       },
       {
-        "command": "extension.topPickStackoverflow",
+        "command": "askguru.topPickStackoverflow",
         "title": "Stackoverflow: Top Pick Questions"
-      },
-      {
-        "command": "extension.signin",
-        "title": "Stackoverflow: Sign In"
       }
     ],
     "configuration": [
@@ -65,7 +83,7 @@
     ],
     "keybindings": [
       {
-        "command": "extension.searchStackoverflow",
+        "command": "askguru.searchStackoverflow",
         "key": "ctrl+alt+s",
         "mac": "ctrl+cmd+s"
       }
