@@ -145,8 +145,8 @@
 <QuestionTitle
   on:relatedQuestionSearch={handleOnRelatedSearch}
   title={questionTitle}
-  creationDate={question && question.created}
-  lastActivityDate={question && question.modified}
+  creationDate={question && question.createdAtTime}
+  lastActivityDate={question && question.modifiedAtTime}
   viewCount={question && question.viewed}
   {relatedQuestions}
   {extensionAction} />

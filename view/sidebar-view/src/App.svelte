@@ -1,15 +1,18 @@
 <script>
-  import { vscodeInfo } from './helpers/vscode-api.helper'
-  function test() {
-    vscodeInfo('testing....')
+  import { postMessage } from './helpers/vscode-api.helper'
+  function searchQuestion() {
+    postMessage('searchQuestion', 'Opening search panel, please wait...')
+  }
+  function askQuestion() {
+    postMessage('askQuestion', 'Opening ask question panel, please wait...')
   }
 </script>
 
 <div>
   <div>
-    <button on:click={test}>Show Questions</button>
+    <button on:click={searchQuestion}>Search</button>
   </div>
   <div>
-    <button>Ask Question</button>
+    <button on:click={askQuestion}>Ask Question</button>
   </div>
 </div>

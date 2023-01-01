@@ -175,10 +175,16 @@
 
   function initSearch() {
     section.set("search");
+    vscodeWindowTitle($searchQuery);
     search();
   }
+
+  function searchFromSearchInput() {
+    vscodeWindowTitle($searchQuery);
+    search();
+  }
+
   function search() {
-    console.log('search from app')
     if (
       $searchQuery[0] === "[" &&
       $searchQuery[$searchQuery.length - 1] === "]"
@@ -187,7 +193,6 @@
       handleTagSelected({ detail: { tag: tag } }); // (o.0)
       return;
     }
-
     vscodeProgress("start", "Loading Search Results", false);
     isLoading = true;
     tagData = null;
@@ -218,7 +223,7 @@
         if (response.status === 200) {
           let responseBody = response.data;
           searchData = responseBody.data['SEARCH_BY_TEXT'].results;
-          totalResults = 1;
+          totalResults = searchData ? searchData.length : 0;
           vscodeProgress("stop", null, false);
         } else {
           vscodeProgress("stop", null, true);
@@ -240,7 +245,7 @@
     on:gotoQuestion={handleGotoQuestion}
     on:gotoTagLearnMore={() => section.set("tag")}
     on:searchByTag={handleTagSelected}
-    on:searchInput={search}
+    on:searchInput={searchFromSearchInput}
     on:searchByPage={handlePageSearch}
     on:filterChange={handleFilterChangeSearch}
     {isLoading}

@@ -20,6 +20,22 @@ export class Sidebar implements vscode.WebviewViewProvider {
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
+                case "searchQuestion": {
+                    if (!data.value) {
+                        return;
+                    }
+                    vscode.commands.executeCommand("askguru.searchStackoverflow");
+                    //vscode.window.showInformationMessage(data.value);
+                    break;
+                }
+                case "askQuestion": {
+                    if (!data.value) {
+                        return;
+                    }
+                    vscode.commands.executeCommand("askguru.askQuestion");
+                    //vscode.window.showInformationMessage(data.value);
+                    break;
+                }
                 case "onInfo": {
                     if (!data.value) {
                         return;

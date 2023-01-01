@@ -1,18 +1,9 @@
 <script>
-  import { onMount, afterUpdate } from "svelte";
-  import { i18n } from "../stores/i18n.js";
-  import { vscodeProgress } from "../stores/vscode-api.js";
+  import { afterUpdate } from "svelte";
   import {getSanitizingConverter} from 'pagedown';
-  import { uriSegments } from "../stores/static-models.js";
-  import {
-    selectedAnswerFilter,
-    resultFilters
-  } from "../stores/results-filter.js";
-  import axios from "axios";
   import Comments from "../common/Comments.svelte";
   import RowLayout from "../common/RowLayout.svelte";
   import ResultsBar from "../Common/ResultsBar.svelte";
-  import Loader from "../Common/Loader.svelte";
   import User from "../Common/User.svelte";
   import Tags from "../Common/Tags.svelte";
   import QuestionAnswerIndicies from "./QuestionAnswerIndicies.svelte";

@@ -14,7 +14,7 @@ function vscodeProgress(action, title, hasError) {
 function vscodeWindowTitle(title) {
   vscode.postMessage({
     command: "titleChange",
-    title: `SO: ${title}`
+    title: `Search: ${title}`
   });
 }
 

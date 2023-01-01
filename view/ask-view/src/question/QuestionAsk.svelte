@@ -1,5 +1,9 @@
 <script>
 	import { StacksEditor } from '@stackoverflow/stacks-editor';
+    import "@stackoverflow/stacks-editor/dist/styles.css";
+    // include the Stacks js and css as they're not included in the bundle
+    import "@stackoverflow/stacks";
+    import "@stackoverflow/stacks/dist/css/stacks.css";
     import { onMount } from "svelte";
     import QuestionTag from "./QuestionTag.svelte";
     let stacksEditor;
@@ -14,11 +18,6 @@
             "*Your* **markdown** here",
             {}
         );
-    //     new window.stacksEditor.StacksEditor(
-    //     document.querySelector("#editor-container"),
-    //     "*Your* **markdown** here",
-    //     {}
-    // );
     })
 
     function remove(tagName) {
@@ -28,19 +27,14 @@
 
 
     function addQuestionTag(event) {
-
         if (event.keyCode === 13) {
             questionTags.push(event.target.value);
             questionTags = [...questionTags]
         }
-        
     }
-
-    //saveFunction('removeQuestionTag', remove);
-
 </script>
 
-<div style="margin:50px;padding:20px">
+<div style="margin:50px;padding:20px .theme-dark__forced">
     <div
         class="flex--item w70 lg:w100 bg-white bar-sm p24 ba bc-black-075 fl-shrink0 js-post-title-section"
         id="post-title"
@@ -53,7 +47,7 @@
                 <div class="d-flex flex--item md:fd-column">
                     <div class="s-description flex--item9 my2">
                         <label for="title">
-                            Be specific and imagine you’re asking a question to
+                            Be specific and imagine you're asking a question to
                             another person.
                         </label>
                     </div>
@@ -136,11 +130,8 @@
             <div style="margin-bottom:10px">
                 {#each questionTags as questionTag(questionTag)}
                     <QuestionTag tageName={questionTag} removeQuestionTag={(tag) => remove(tag)}/>                    
-                {/each}
-                
+                {/each}          
             </div>
-           
-            
             <div class="d-flex ps-relative">
                 <input
                     id="title"

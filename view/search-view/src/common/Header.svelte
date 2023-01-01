@@ -41,15 +41,14 @@
 </style>
 
 <h3 class="text-capitalize">
-  <!-- <div style="background: gray;">extensionAction -- {extensionAction} section -- {$section}</div> -->
-  {#if ($section === 'question' && (extensionAction === 'init' || extensionAction === 'search') ) || $section === 'tag'}
+  {#if $section === 'question' || $section === 'tag'}
     <div class="back text-capitalize" on:click={goBack}>
       <span />
       {$i18n.text.back_to_search_results}
     </div>
   {:else}
-    Stack
-    <strong>overflow</strong>
+    Ask
+    <strong>Guru</strong>
     {#if $i18n && $i18n.code !== ''}
       <small>
         <i>{$i18n.language}</i>

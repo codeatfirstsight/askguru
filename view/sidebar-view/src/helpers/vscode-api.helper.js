@@ -18,11 +18,11 @@ function vscodeWindowTitle(title) {
   });
 }
 
-function vscodeInfo(infoText) {
+function postMessage(type, value) {
   vscode.postMessage({
-    type: "onInfo",
-    value: infoText
+    type: type,
+    value: value
   });
 }
 
-export { vscodeProgress, vscodeWindowTitle, vscodeInfo }
+export { vscodeProgress, vscodeWindowTitle, postMessage }

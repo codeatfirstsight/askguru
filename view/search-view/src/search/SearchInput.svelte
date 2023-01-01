@@ -1,13 +1,17 @@
 <script>
   import { createEventDispatcher, onMount } from "svelte";
   import { page, searchQuery } from "../stores/common.js";
-  import { i18n } from "../stores/i18n.js";
+  import { i18n, languages } from "../stores/i18n.js";
 
   export let isLoading;
+  export let initialSearch;
   let searchQueryPreviousValue;
 
   onMount(() => {
     searchQueryPreviousValue = $searchQuery;
+    if(initialSearch) {
+      $i18n = $languages[0];
+    }
   });
 
   $: isLoading && (searchQueryPreviousValue = $searchQuery);
@@ -21,7 +25,7 @@
   function handleSearch() {
     if (
       !isLoading &&
-      $searchQuery !== searchQueryPreviousValue &&
+      ($searchQuery !== searchQueryPreviousValue || initialSearch) &&
       $searchQuery !== ""
     ) {
       search();
@@ -30,6 +34,7 @@
 
   const dispatch = createEventDispatcher();
   function search() {
+    console.log('searching...')
     page.set(1);
     searchQueryPreviousValue = $searchQuery;
     dispatch("searchInput");
@@ -49,9 +54,8 @@
     background-color: var(--vscode-input-background);
     box-shadow: 0 0 0 1px var(--vscode-input-border);
     color: var(--vscode-input-foreground);
-    border: 0;
-    border-radius: 2px;
-    margin: 8px 5px 12px 0;
+    border: 1px solid var(--vscode-input-foreground);
+    margin: 8px 3px 12px 0;
     padding: 5px;
     height: 17px;
     width: calc(100% - 120px);
@@ -65,20 +69,25 @@
 <svelte:window on:keydown={handleSearchByEnterKey} />
 
 <section>
-
-  <div class="text-capitalize">
-    {$i18n.text.results_for}
-    <strong>
-      <i>
-        {#if searchQueryPreviousValue}{searchQueryPreviousValue}{/if}
-      </i>
-    </strong>
-  </div>
+  {#if searchQueryPreviousValue && $i18n}
+    <div class="text-capitalize">
+      {$i18n.text.results_for}
+      <strong>
+        <i>
+          {searchQueryPreviousValue}
+        </i>
+      </strong>
+    </div>
+  {/if}
 
   <input type="text" bind:value={$searchQuery} />
 
   <button on:click={handleSearch} class="text-capitalize">
-    {$i18n.text.search}
+    {#if $i18n}
+      {$i18n.text.search}
+      {:else}
+      Search
+    {/if} 
   </button>
 
 </section>

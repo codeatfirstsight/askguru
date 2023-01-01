@@ -62,7 +62,6 @@ export const languages = readable([
     text: {
       search: 'buscar',
       search_results: 'resultados de Búsqueda',
-      results: 'results',
       results_for: 'resultados para',
       back_to_search_results: 'Regresar a los resultados de búsqueda',
       results: 'resultados',
@@ -99,7 +98,6 @@ export const languages = readable([
       on_hold: 'en espera',
       learn_more: 'learn more',
       questions_tagged: 'preguntas con la etiqueta',
-      back_to_search_results: 'Regresar a los resultados de búsqueda',
       about: 'acerca de',
       tag_info: 'información de etiqueta',
       view_online: 'ver online',
