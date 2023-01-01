@@ -4,6 +4,7 @@
   import { i18n } from "../stores/i18n.js";
 
   export let isLoading;
+  export let initialSearch;
   let searchQueryPreviousValue;
 
   onMount(() => {
@@ -19,9 +20,16 @@
   }
 
   function handleSearch() {
+    console.log('isLoading', isLoading)
+    console.log('searchQuery', $searchQuery )
+    console.log('searchQueryPreviousValue', searchQueryPreviousValue)
+    console.log('initialSearch', initialSearch)
+    console.log('condition', !isLoading &&
+      ($searchQuery !== searchQueryPreviousValue || initialSearch) &&
+      $searchQuery !== "")
     if (
       !isLoading &&
-      $searchQuery !== searchQueryPreviousValue &&
+      ($searchQuery !== searchQueryPreviousValue || initialSearch) &&
       $searchQuery !== ""
     ) {
       search();
@@ -30,6 +38,7 @@
 
   const dispatch = createEventDispatcher();
   function search() {
+    console.log('searching...')
     page.set(1);
     searchQueryPreviousValue = $searchQuery;
     dispatch("searchInput");
@@ -65,20 +74,22 @@
 <svelte:window on:keydown={handleSearchByEnterKey} />
 
 <section>
-
-  <div class="text-capitalize">
-    {$i18n.text.results_for}
-    <strong>
-      <i>
-        {#if searchQueryPreviousValue}{searchQueryPreviousValue}{/if}
-      </i>
-    </strong>
-  </div>
+  {#if searchQueryPreviousValue && $i18n}
+    <div class="text-capitalize">
+      {$i18n.text.results_for}
+      <strong>
+        <i>
+          searchQueryPreviousValue
+        </i>
+      </strong>
+    </div>
+  {/if}
 
   <input type="text" bind:value={$searchQuery} />
 
   <button on:click={handleSearch} class="text-capitalize">
-    {$i18n.text.search}
+    <!-- {$i18n.text.search} -->
+    Search
   </button>
 
 </section>

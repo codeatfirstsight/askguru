@@ -6,51 +6,54 @@ import { Sidebar } from './sidebar';
 
 export function activate(context: vscode.ExtensionContext) {
 
-  // let accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzYWxpbHZuYWlyIiwiZ2l2ZW5fbmFtZSI6IlNhbGlsIiwiZmFtaWx5X25hbWUiOiJOYWlyIiwiaWF0IjoxNTE2MjM5MDIyfQ.AOj7Dccg1qmTZ7MxIJBaCWH7w7su-0SkPYSBPnsg9FA";
+  let accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzYWxpbHZuYWlyIiwiZ2l2ZW5fbmFtZSI6IlNhbGlsIiwiZmFtaWx5X25hbWUiOiJOYWlyIiwiaWF0IjoxNTE2MjM5MDIyfQ.AOj7Dccg1qmTZ7MxIJBaCWH7w7su-0SkPYSBPnsg9FA";
 
   // /**
   //  * General stackoverflow question
   //  */
-  // let searchStackoverflow = vscode.commands.registerCommand('askguru.searchStackoverflow', () => {
+  let searchStackoverflow = vscode.commands.registerCommand('askguru.searchStackoverflow', () => {
 
-  //   // Search options
-  //   const searchOptions: vscode.InputBoxOptions = {
-  //     placeHolder: 'Search Stackoverflow',
-  //     prompt: '*Required',
-  //   };
+    // Search options
+    const searchOptions: vscode.InputBoxOptions = {
+      placeHolder: 'Search Stackoverflow',
+      prompt: '*Required',
+    };
 
-  //   // Show Input
-  //   vscode.window.showInputBox(searchOptions).then((searchQuery: string | undefined) => {
+    // Show Input
+    // vscode.window.showInputBox(searchOptions).then((searchQuery: string | undefined) => {
 
-  //     if (searchQuery) {
+    //   if (searchQuery) {
 
-  //       // Get language
-  //       const currentLanguageSelection = vscode.workspace.getConfiguration().get('stackoverflow.view.language');
-  //       // Get sort type
-  //       const currentSortTypeSelection = vscode.workspace.getConfiguration().get('stackoverflow.view.sort');
-  //       // Create webview panel
-  //       const stackoverflowPanel = createWebViewPanel(`SO: ${searchQuery}`, context.extensionPath);
-  //       // Set webview - svelte - built to ./app/public/*
-  //       stackoverflowPanel.webview.html = AppWebview(context,stackoverflowPanel.webview, stackoverflowPanel);
-  //       // Post search term, read in App.svelte as window.addEventListener("message"
-  //       stackoverflowPanel.webview.postMessage({
-  //         action: 'search',
-  //         query: searchQuery,
-  //         language: currentLanguageSelection,
-  //         sortType: currentSortTypeSelection,
-  //         accessToken: accessToken
-  //       });
 
-  //       // Show progress loader
-  //       windowProgress(stackoverflowPanel);
 
-  //       // Listen for changes to window title
-  //       changeWindowTitle(stackoverflowPanel);
+    //   }
 
-  //     }
+    // });
 
-  //   });
-  // });
+    let searchQuery = "";
+    // Get language
+    const currentLanguageSelection = vscode.workspace.getConfiguration().get('stackoverflow.view.language');
+    // Get sort type
+    const currentSortTypeSelection = vscode.workspace.getConfiguration().get('stackoverflow.view.sort');
+    // Create webview panel
+    const stackoverflowPanel = createWebViewPanel(context,`SO: ${searchQuery}`, context.extensionPath);
+    // Set webview - svelte - built to ./app/public/*
+    stackoverflowPanel.webview.html = AppWebview(context,stackoverflowPanel.webview, stackoverflowPanel);
+    // Post search term, read in App.svelte as window.addEventListener("message"
+    stackoverflowPanel.webview.postMessage({
+      action: 'init',
+      query: '',
+      language: currentLanguageSelection,
+      sortType: currentSortTypeSelection,
+      accessToken: accessToken
+    });
+
+    // Show progress loader
+    windowProgress(stackoverflowPanel);
+
+    // Listen for changes to window title
+    changeWindowTitle(stackoverflowPanel);
+  });
 
   // /**
   //  * Top pick stackoverflow articles
@@ -90,7 +93,7 @@ export function activate(context: vscode.ExtensionContext) {
   //   });
   // });
 
-  // context.subscriptions.push(searchStackoverflow);
+  context.subscriptions.push(searchStackoverflow);
   // context.subscriptions.push(topPickStackoverflow);
 
   const sidebar = new Sidebar(context.extensionUri);
@@ -105,9 +108,9 @@ export function activate(context: vscode.ExtensionContext) {
  * @param panelTitle string
  * @param path string
  */
-function createWebViewPanel(panelTitle: string, path: string): vscode.WebviewPanel {
+function createWebViewPanel(context: vscode.ExtensionContext, panelTitle: string, path: string): vscode.WebviewPanel {
   return vscode.window.createWebviewPanel('webview', panelTitle, vscode.ViewColumn.Beside, {
-    localResourceRoots: [vscode.Uri.file(posix.join(path, 'app', 'dist'))],
+    localResourceRoots: [context.extensionUri],
     enableScripts: true,
     retainContextWhenHidden: true
   });

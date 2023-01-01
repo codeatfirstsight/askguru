@@ -41,7 +41,8 @@
 </style>
 
 <h3 class="text-capitalize">
-  {#if ($section === 'question' && extensionAction === 'search') || $section === 'tag'}
+  <!-- <div style="background: gray;">extensionAction -- {extensionAction} section -- {$section}</div> -->
+  {#if ($section === 'question' && (extensionAction === 'init' || extensionAction === 'search') ) || $section === 'tag'}
     <div class="back text-capitalize" on:click={goBack}>
       <span />
       {$i18n.text.back_to_search_results}

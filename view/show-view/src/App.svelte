@@ -13,7 +13,7 @@
   import Search from "./search/Search.svelte";
   import Tag from "./tag/tag.svelte";
   import { onMount } from "svelte";
-  import QuestionAsk from "./question/QuestionAsk.svelte";
+    import SearchInput from "./search/SearchInput.svelte";
 
   let searchData;
   let questionId;
@@ -24,6 +24,7 @@
   let selectedTag;
   let tagData;
   let gif;
+  let messageEventRecieved = false;
 
   /**
    * Posted properties on search from extension.ts => showInputBox()
@@ -33,8 +34,22 @@
    * sortType: currentSortTypeSelection // user settings configuation
    */
   window.addEventListener("message", (event) => {
+    messageEventRecieved = true;
     extensionAction = event.data.action;
-    if (event.data.action === "search") {
+    if (event.data.action === "init") {
+      isLoading = false;
+      authStore.set(event.data.accessToken);
+      // Set language
+      $i18n = $languages.find((_) => _.language === event.data.language);
+      // Find & set sort filter
+      const searchFilterToSetAsSelected = resultFilters.find(
+        (_) => _.label === event.data.sortType
+      );
+      selectedSearchFilter.set(searchFilterToSetAsSelected);
+      // Set section
+      section.set("init");
+    }
+    else if (event.data.action === "search") {
       authStore.set(event.data.accessToken);
       searchQuery.set(event.data.query);
       // Set language
@@ -60,18 +75,13 @@
   });
 
   onMount(() => {
-    searchQuery.set('tomcat');
-    authStore.set('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzYWxpbHZuYWlyIiwiZ2l2ZW5fbmFtZSI6IlNhbGlsIiwiZmFtaWx5X25hbWUiOiJOYWlyIiwiaWF0IjoxNTE2MjM5MDIyfQ.AOj7Dccg1qmTZ7MxIJBaCWH7w7su-0SkPYSBPnsg9FA')
-    // Set language
-    $i18n = $i18n = $languages[0];
-    // Set section
-    section.set("search");
-    // Find & set sort filter
-    const searchFilterToSetAsSelected = resultFilters.find(
-      _ => _.label === 'Newest'
-    );
-    selectedSearchFilter.set(searchFilterToSetAsSelected);
-    search();
+    if(!$section || !$selectedSearchFilter || !messageEventRecieved) {
+      $i18n = $languages[0];
+      const searchFilterToSetAsSelected = resultFilters.find(
+        _ => _.label === 'Newest'
+      );
+      selectedSearchFilter.set(searchFilterToSetAsSelected);
+    }
   });
 
   function handleGotoQuestion(event) {
@@ -162,7 +172,13 @@
   }
 
   // Main search functionality
+
+  function initSearch() {
+    section.set("search");
+    search();
+  }
   function search() {
+    console.log('search from app')
     if (
       $searchQuery[0] === "[" &&
       $searchQuery[$searchQuery.length - 1] === "]"
@@ -216,9 +232,10 @@
 </script>
 
 <Header on:goBack={handleGotoSearch} {extensionAction} />
-
+{#if $section === "init"}
+  <SearchInput isLoading={false} initialSearch={true} on:searchInput={initSearch} />
+{/if}
 {#if $section === "search"}
-  <QuestionAsk />
   <Search
     on:gotoQuestion={handleGotoQuestion}
     on:gotoTagLearnMore={() => section.set("tag")}

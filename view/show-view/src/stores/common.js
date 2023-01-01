@@ -1,9 +1,9 @@
 import { writable } from 'svelte/store';
 
 const page = writable(1);
-const section = writable();
+const section = writable("init");
 const authStore = writable();
-const searchQuery = writable();
+const searchQuery = writable("");
 
 function formatNumber(num) {
   if (Math.abs(num) > 999999) {

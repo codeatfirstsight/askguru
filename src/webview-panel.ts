@@ -10,9 +10,8 @@ export function AppWebview(context: vscode.ExtensionContext, webview: vscode.Web
   // const cssBundle: Uri = Uri.file(posix.join(contextPath, 'app', 'public', 'bundle.css')).with({ scheme: 'vscode-resource' });
   // const jsFile: Uri = Uri.file(posix.join(contextPath, 'app', 'public', 'bundle.js')).with({ scheme: 'vscode-resource' });
   // console.log(jsFile)
-  const cssBundle = webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'app', 'dist', 'index.css'));
-  const jsFile = webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'app', 'dist', 'index.js'));
-  const cssGlobal: Uri = webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'app', 'dist', 'global.css'));
+  const cssBundle = webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, "view", "show-view", "dist", "index.css"));
+  const jsFile = webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, "view", "show-view", "dist", "index.js"));
   return `
     <!doctype html>
     <html>
@@ -24,7 +23,6 @@ export function AppWebview(context: vscode.ExtensionContext, webview: vscode.Web
         <title> Stack Overflow View </title>
         <link rel="stylesheet" href="https://unpkg.com/@stackoverflow/stacks-editor/dist/styles.css">
         <link rel='stylesheet' href='${cssBundle}'>
-        <link rel='stylesheet' href='${cssGlobal}'>
 
         <script defer src='${jsFile}'></script>
         <link rel="stylesheet"

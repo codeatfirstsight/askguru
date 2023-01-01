@@ -24,6 +24,7 @@ export class Sidebar implements vscode.WebviewViewProvider {
                     if (!data.value) {
                         return;
                     }
+                    vscode.commands.executeCommand("askguru.searchStackoverflow");
                     vscode.window.showInformationMessage(data.value);
                     break;
                 }
