@@ -126,11 +126,11 @@ export class WebviewPanel {
     }
   }
 
-  private async _update(viewPath: string) {
+  private _update(viewPath: string) {
     const webview = this._panel.webview;
 
     this._panel.webview.html = this._getHtmlForWebview(this._activeColorTheme, viewPath, this._context , webview);
-    webview.onDidReceiveMessage(async (data) => {
+    webview.onDidReceiveMessage((data) => {
       switch (data.type) {
         case "onInfo": {
           if (!data.value) {

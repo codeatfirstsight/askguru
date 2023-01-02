@@ -6,8 +6,17 @@ export function activate(context: vscode.ExtensionContext) {
   let activeColorTheme: vscode.ColorTheme = vscode.window.activeColorTheme;
   let accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzYWxpbHZuYWlyIiwiZ2l2ZW5fbmFtZSI6IlNhbGlsIiwiZmFtaWx5X25hbWUiOiJOYWlyIiwiaWF0IjoxNTE2MjM5MDIyfQ.AOj7Dccg1qmTZ7MxIJBaCWH7w7su-0SkPYSBPnsg9FA";
   let currentView = "";
+  vscode.workspace.onDidChangeConfiguration(event => {
+    let affected = event.affectsConfiguration("workbench.colorTheme");
+    if(affected) {
+      activeColorTheme = vscode.window.activeColorTheme;
+      if(currentView === "askView") {
+        reloadAskView(currentView, activeColorTheme, context, accessToken);
+      }
+    }
+  })
   let searchView = vscode.commands.registerCommand('askguru.searchStackoverflow', () => {
-    if(currentView === "searchView") {
+    if(currentView === "searchView"  && WebviewPanel.currentPanel) {
       return;
     }
     else {
@@ -18,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   let askView = vscode.commands.registerCommand('askguru.askQuestion', () => {
-    if(currentView === "askView") {
+    if(currentView === "askView" && WebviewPanel.currentPanel) {
       return;
     }
     else {
@@ -30,13 +39,18 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(searchView);
   context.subscriptions.push(askView);
-  // context.subscriptions.push(topPickStackoverflow);
 
   const sidebar = new Sidebar(context.extensionUri);
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider("askguru-sidebar", sidebar)
   );
+}
+
+function reloadAskView(currentView:string, activeColorTheme: vscode.ColorTheme, context: vscode.ExtensionContext, accessToken: string) {
+  currentView = "askView"
+  WebviewPanel.kill();
+  initAskPanel(activeColorTheme, context, accessToken);
 }
 
 function initSearchPanel(activeColorTheme: vscode.ColorTheme, context: vscode.ExtensionContext, accessToken: string) {

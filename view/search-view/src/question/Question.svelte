@@ -10,7 +10,7 @@
   import RowLayout from "../Common/RowLayout.svelte";
   import User from "../Common/User.svelte";
   import Tags from "../Common/Tags.svelte";
-  import Loader from "../Common/Loader.svelte";
+  import Loader from "../common/Loader.svelte";
   import QuestionTitle from "./QuestionTitle.svelte";
   import QuestionAnswers from "./QuestionAnswers.svelte";
   import QuestionIndices from "./QuestionIndices.svelte";

@@ -1,38 +1,97 @@
 <script>
+	import { i18n } from './../stores/i18n.js';
 	import { StacksEditor } from '@stackoverflow/stacks-editor';
     import "@stackoverflow/stacks-editor/dist/styles.css";
     // include the Stacks js and css as they're not included in the bundle
     import "@stackoverflow/stacks";
     import "@stackoverflow/stacks/dist/css/stacks.css";
     import { onMount } from "svelte";
+    import { authStore } from "../stores/common.js";
     import QuestionTag from "./QuestionTag.svelte";
+    import { vscodeProgress } from '../helpers/vscode-api.helper';
+    import Loader from '../common/Loader.svelte';
+    import axios from "axios";
+
     let stacksEditor;
 
-    let questionTags = ['react'];
-
-    let questionTagValue = ""
+    let title = "";
+    let questionTags = [];
+    let questionTagValue = "";
+    let isLoading = false;
 
     onMount(()=> {
         stacksEditor = new StacksEditor(
             document.querySelector("#editor-container"),
-            "*Your* **markdown** here",
+            "",
             {}
         );
     })
 
     function remove(tagName) {
-        console.log(tagName)
         questionTags = [...questionTags.filter(tag => tagName!=tag)];
     }
 
 
     function addQuestionTag(event) {
         if (event.keyCode === 13) {
+            questionTagValue = ""
             questionTags.push(event.target.value);
             questionTags = [...questionTags]
         }
     }
+
+
+    function handleAskQuestion() {
+        vscodeProgress("start", "Loading Search Results", false);
+        isLoading = true;
+
+        const tags = questionTags.map(tag => {
+            return {
+                text : tag
+            }
+        });
+
+        const authToken = $authStore;
+        const qaboxUrl = "http://localhost:8088/api/common/post-question";
+        const requestBody = {
+            title,
+            text: stacksEditor.content,
+            tags
+        };
+        var headers = {
+            withCredentials: true,
+            headers: {
+                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzYWxpbHZuYWlyIiwiZ2l2ZW5fbmFtZSI6IlNhbGlsIiwiZmFtaWx5X25hbWUiOiJOYWlyIiwiaWF0IjoxNTE2MjM5MDIyfQ.AOj7Dccg1qmTZ7MxIJBaCWH7w7su-0SkPYSBPnsg9FA`,
+            },
+        };
+
+        axios
+        .post(qaboxUrl, requestBody, headers)
+        .then((response) => {
+            isLoading = false;
+            console.log(response)
+            if (response.status === 200) {
+                let responseBody = response.data;
+                console.log(responseBody);
+                vscodeProgress("stop", null, false);
+            } else {
+                vscodeProgress("stop", null, true);
+            }
+        })
+        .catch(() => {
+            isLoading = false;
+            vscodeProgress("stop", null, true);
+        });
+
+
+    }
+
+
 </script>
+
+{#if isLoading}
+  <Loader />
+{/if}
 
 <div style="margin:50px;padding:20px .theme-dark__forced">
     <div
@@ -64,7 +123,7 @@
                     maxlength="300"
                     placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
                     class="s-input js-post-title-field ask-title-field"
-                    bind:value={questionTagValue}
+                    bind:value={title}
                     data-min-length="15"
                     data-max-length="150"
                 />
@@ -140,7 +199,7 @@
                     maxlength="300"
                     placeholder="e.g. React, Java"
                     class="s-input js-post-title-field ask-title-field"
-                    value=""
+                    bind:value={questionTagValue}
                     data-min-length="15"
                     data-max-length="150"
                     on:keydown={addQuestionTag}
@@ -164,7 +223,7 @@
     <div>
         <button
             class="s-btn s-btn__primary mt12 js-next-problem-details js-next-buttons"
-            
+            on:click={handleAskQuestion}
             type="button">Post your question</button
         >
     </div>
