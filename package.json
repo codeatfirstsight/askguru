@@ -11,7 +11,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:askguru.searchStackoverflow",
+    "onCommand:askguru.search",
     "onCommand:askguru.askQuestion",
     "onView:askguru-sidebar"
   ],
@@ -40,8 +40,8 @@
 
     "commands": [
       {
-        "command": "askguru.searchStackoverflow",
-        "title": "Stackoverflow: Search"
+        "command": "askguru.search",
+        "title": "Search"
       },
       {
         "command": "askguru.askQuestion",
@@ -50,9 +50,9 @@
     ],
     "configuration": [
       {
-        "title": "Stackoverflow View",
+        "title": "AskGuru View",
         "properties": {
-          "stackoverflow.view.language": {
+          "askguru.view.language": {
             "type": "string",
             "enum": [
               "English",
@@ -62,10 +62,10 @@
               "Japanese"
             ],
             "default": "English",
-            "description": "Select your preferred language for Stack Overflow.",
+            "description": "Select your preferred language.",
             "scope": "window"
           },
-          "stackoverflow.view.sort": {
+          "askguru.view.sort": {
             "type": "string",
             "enum": [
               "Relevance",
@@ -82,7 +82,7 @@
     ],
     "keybindings": [
       {
-        "command": "askguru.searchStackoverflow",
+        "command": "askguru.search",
         "key": "ctrl+alt+s",
         "mac": "ctrl+cmd+s"
       }

@@ -15,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
     }
   })
-  let searchView = vscode.commands.registerCommand('askguru.searchStackoverflow', () => {
+  let searchView = vscode.commands.registerCommand('askguru.search', () => {
     if(currentView === "searchView"  && WebviewPanel.currentPanel) {
       return;
     }
@@ -55,13 +55,10 @@ function reloadAskView(currentView:string, activeColorTheme: vscode.ColorTheme, 
 
 function initSearchPanel(activeColorTheme: vscode.ColorTheme, context: vscode.ExtensionContext, accessToken: string) {
 
-  const currentLanguageSelection = vscode.workspace.getConfiguration().get('stackoverflow.view.language');
+  const currentLanguageSelection = vscode.workspace.getConfiguration().get('askguru.view.language');
   // Get sort type
-  const currentSortTypeSelection = vscode.workspace.getConfiguration().get('stackoverflow.view.sort');
+  const currentSortTypeSelection = vscode.workspace.getConfiguration().get('askguru.view.sort');
   // Create webview panel
-  //const stackoverflowPanel = createWebViewPanel(context,`Search: ${searchQuery}`, context.extensionPath);
-  // Set webview - svelte - built to ./app/public/*
-  //stackoverflowPanel.webview.html = AppWebview(activeColorTheme, "search-view", context,stackoverflowPanel.webview, stackoverflowPanel);
   WebviewPanel.kill();
   const searchPanel = WebviewPanel.createOrShow(`Search`, activeColorTheme, "search-view", context, context.extensionUri);
   // Post search term, read in App.svelte as window.addEventListener("message"
@@ -87,7 +84,7 @@ function initAskPanel(activeColorTheme: vscode.ColorTheme, context: vscode.Exten
   // askPanel.webview.html = AppWebview(activeColorTheme, "ask-view", context, askPanel.webview, askPanel);
   // askPanel.webview.html = AppWebview(activeColorTheme, "ask-view", context, askPanel.webview, askPanel);
 
-  const currentLanguageSelection = vscode.workspace.getConfiguration().get('stackoverflow.view.language');
+  const currentLanguageSelection = vscode.workspace.getConfiguration().get('askguru.view.language');
   
   askPanel.webview.postMessage({
     action: 'ask',

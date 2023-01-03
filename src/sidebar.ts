@@ -24,7 +24,7 @@ export class Sidebar implements vscode.WebviewViewProvider {
                     if (!data.value) {
                         return;
                     }
-                    vscode.commands.executeCommand("askguru.searchStackoverflow");
+                    vscode.commands.executeCommand("askguru.search");
                     //vscode.window.showInformationMessage(data.value);
                     break;
                 }
@@ -40,7 +40,6 @@ export class Sidebar implements vscode.WebviewViewProvider {
                     if (!data.value) {
                         return;
                     }
-                    vscode.commands.executeCommand("askguru.searchStackoverflow");
                     vscode.window.showInformationMessage(data.value);
                     break;
                 }
