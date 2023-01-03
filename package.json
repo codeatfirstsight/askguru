@@ -11,31 +11,48 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:extension.searchStackoverflow",
-    "onCommand:extension.topPickStackoverflow",
-    "onCommand:extension.signin"
+    "onCommand:askguru.search",
+    "onCommand:askguru.askQuestion",
+    "onView:askguru-sidebar"
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "askguru-sidebar-view",
+          "title": "AskGuru",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "askguru-sidebar-view": [
+        {
+          "type": "webview",
+          "id": "askguru-sidebar",
+          "name": "AskGuru",
+          "icon": "media/icon.svg",
+          "contextualTitle": "AskGuru"
+        }
+      ]
+    },
+
     "commands": [
       {
-        "command": "extension.searchStackoverflow",
-        "title": "Stackoverflow: Search"
+        "command": "askguru.search",
+        "title": "Search"
       },
       {
-        "command": "extension.topPickStackoverflow",
-        "title": "Stackoverflow: Top Pick Questions"
-      },
-      {
-        "command": "extension.signin",
-        "title": "Stackoverflow: Sign In"
+        "command": "askguru.askQuestion",
+        "title": "Ask Question"
       }
     ],
     "configuration": [
       {
-        "title": "Stackoverflow View",
+        "title": "AskGuru View",
         "properties": {
-          "stackoverflow.view.language": {
+          "askguru.view.language": {
             "type": "string",
             "enum": [
               "English",
@@ -45,10 +62,10 @@
               "Japanese"
             ],
             "default": "English",
-            "description": "Select your preferred language for Stack Overflow.",
+            "description": "Select your preferred language.",
             "scope": "window"
           },
-          "stackoverflow.view.sort": {
+          "askguru.view.sort": {
             "type": "string",
             "enum": [
               "Relevance",
@@ -65,7 +82,7 @@
     ],
     "keybindings": [
       {
-        "command": "extension.searchStackoverflow",
+        "command": "askguru.search",
         "key": "ctrl+alt+s",
         "mac": "ctrl+cmd+s"
       }

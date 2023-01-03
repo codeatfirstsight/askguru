@@ -1,0 +1,135 @@
+{
+    "statusCode": 200,
+    "statusText": "Success",
+    "data": {
+        "SEARCH_BY_TEXT": {
+            "metadata": {},
+            "results": [
+                {
+                    "creatorId": 21,
+                    "modifierId": 21,
+                    "creatorName": "admin ",
+                    "modifierName": "admin ",
+                    "createdAtTime": 1650851554,
+                    "modifiedAtTime": 1672438955,
+                    "created": "2022-04-25T01:52:34.283+00:00",
+                    "modified": "2022-12-30T22:22:35.532+00:00",
+                    "text": "    In my web.xml of my simple app i have\n    \n    <servlet>\n        <servlet-name>HelloServlet</servlet-name>\n        <servlet-class>HelloServlet</servlet-class>\n    </servlet>\n    <servlet-mapping>\n        <servlet-name>HelloServlet</servlet-name>\n        <url-pattern>/Hai</url-pattern>\n    </servlet-mapping>\n    and now if I have\n    \n    <url-pattern>/*</url-pattern>\n    in security constraint it asks for password when I try to get to my deployed app, but when I change it to\n    \n    <url-pattern>/Projekt/*</url-pattern>\n    and try to enter Projekt/Hai I am not asked for my password, why?",
+                    "totalVotes": 1,
+                    "upVotes": 1,
+                    "downVotes": 0,
+                    "editable": false,
+                    "deletable": false,
+                    "displayOnly": true,
+                    "votable": false,
+                    "questionId": 22,
+                    "title": "Tomcat issue with url-pattern",
+                    "answers": [
+                        {
+                            "creatorId": 25,
+                            "modifierId": 25,
+                            "creatorName": "User1 ",
+                            "modifierName": "User1 ",
+                            "createdAtTime": 1650851618,
+                            "modifiedAtTime": 1650851695,
+                            "created": "2022-04-25T01:53:38.929+00:00",
+                            "modified": "2022-04-25T01:54:55.824+00:00",
+                            "text": "The url-pattern that you specify in web.xml is always a pattern that is relative to the context path of the webapp. So, `/Projekt/*` means all the URLs under `/Projekt`, **under the context path of the application**.\n\nSince your app is deployed un `/Projekt`, it means that this url-pattern matches the URL `http://localhost:8080/Projekt/projekt/Hai`. It doesn't match `http://localhost:8080/Projekt/Hai`, because this URL, when written relatively to the context path, is `/Hai`, which doesn't matches the pattern `/Projekt/*`.\n\nGood rule of thumb: nothing in the code or deployment descriptor of a webapp should ever depend on the context path chosen to deploy the application. Everything should always be specified relatively to this context path.",
+                            "totalVotes": 0,
+                            "upVotes": 0,
+                            "downVotes": 0,
+                            "editable": false,
+                            "deletable": false,
+                            "displayOnly": true,
+                            "votable": true,
+                            "answerId": 26,
+                            "questionId": 22,
+                            "accepted": true,
+                            "acceptable": false,
+                            "comments": []
+                        }
+                    ],
+                    "comments": [
+                        {
+                            "creatorId": 27,
+                            "creatorName": "user2 ",
+                            "createdAtTime": 1650851666,
+                            "modifiedAtTime": 1650851666,
+                            "created": "2022-04-25T01:54:26.668+00:00",
+                            "modified": "2022-04-25T01:54:26.668+00:00",
+                            "text": "Under which context path is your application deployed, and what's the complete URL you're using when it doesn't ask for a password?",
+                            "totalVotes": 0,
+                            "upVotes": 0,
+                            "downVotes": 0,
+                            "editable": false,
+                            "deletable": false,
+                            "displayOnly": true,
+                            "votable": false,
+                            "commentId": 28,
+                            "parentId": 22,
+                            "type": "Q"
+                        },
+                        {
+                            "creatorId": 21,
+                            "creatorName": "admin ",
+                            "createdAtTime": 1650851717,
+                            "modifiedAtTime": 1650851717,
+                            "created": "2022-04-25T01:55:17.181+00:00",
+                            "modified": "2022-04-25T01:55:17.181+00:00",
+                            "text": "Just goofing around",
+                            "totalVotes": 0,
+                            "upVotes": 0,
+                            "downVotes": 0,
+                            "editable": false,
+                            "deletable": false,
+                            "displayOnly": true,
+                            "votable": false,
+                            "commentId": 29,
+                            "parentId": 22,
+                            "type": "Q"
+                        }
+                    ],
+                    "viewed": 13,
+                    "tags": [
+                        {
+                            "creatorId": 21,
+                            "creatorName": "admin ",
+                            "createdAtTime": 1650851554,
+                            "modifiedAtTime": 1650851554,
+                            "created": "2022-04-25T01:52:34.289+00:00",
+                            "modified": "2022-04-25T01:52:34.289+00:00",
+                            "text": "java",
+                            "totalVotes": 0,
+                            "upVotes": 0,
+                            "downVotes": 0,
+                            "editable": false,
+                            "deletable": false,
+                            "displayOnly": true,
+                            "votable": false,
+                            "tagId": 23,
+                            "questionId": 22
+                        },
+                        {
+                            "creatorId": 21,
+                            "creatorName": "admin ",
+                            "createdAtTime": 1650851554,
+                            "modifiedAtTime": 1650851554,
+                            "created": "2022-04-25T01:52:34.289+00:00",
+                            "modified": "2022-04-25T01:52:34.289+00:00",
+                            "text": "security",
+                            "totalVotes": 0,
+                            "upVotes": 0,
+                            "downVotes": 0,
+                            "editable": false,
+                            "deletable": false,
+                            "displayOnly": true,
+                            "votable": false,
+                            "tagId": 24,
+                            "questionId": 22
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

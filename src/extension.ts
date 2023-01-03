@@ -1,123 +1,102 @@
 import * as vscode from 'vscode';
-import { ExtensionModel } from './extension-model';
-import { posix } from 'path';
-import { AppPageHtml } from './app-page';
+import { WebviewPanel } from './webview-panel';
+import { Sidebar } from './sidebar';
 
 export function activate(context: vscode.ExtensionContext) {
-
-  /**
-   * General stackoverflow question
-   */
-  let searchStackoverflow = vscode.commands.registerCommand('extension.searchStackoverflow', () => {
-
-    // Search options
-    const searchOptions: vscode.InputBoxOptions = {
-      placeHolder: 'Search Stackoverflow',
-      prompt: '*Required',
-    };
-
-    // Show Input
-    vscode.window.showInputBox(searchOptions).then((searchQuery: string | undefined) => {
-
-      if (searchQuery) {
-
-        // Get language
-        const currentLanguageSelection = vscode.workspace.getConfiguration().get('stackoverflow.view.language');
-        // Get sort type
-        const currentSortTypeSelection = vscode.workspace.getConfiguration().get('stackoverflow.view.sort');
-        // Create webview panel
-        const stackoverflowPanel = createWebViewPanel(`SO: ${searchQuery}`, context.extensionPath);
-        // Set webview - svelte - built to ./app/public/*
-        stackoverflowPanel.webview.html = AppPageHtml(context,stackoverflowPanel.webview, stackoverflowPanel);
-        // Post search term, read in App.svelte as window.addEventListener("message"
-        stackoverflowPanel.webview.postMessage({
-          action: 'search',
-          query: searchQuery,
-          language: currentLanguageSelection,
-          sortType: currentSortTypeSelection
-        });
-
-        // Show progress loader
-        windowProgress(stackoverflowPanel);
-
-        // Listen for changes to window title
-        changeWindowTitle(stackoverflowPanel);
-
+  let activeColorTheme: vscode.ColorTheme = vscode.window.activeColorTheme;
+  let accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzYWxpbHZuYWlyIiwiZ2l2ZW5fbmFtZSI6IlNhbGlsIiwiZmFtaWx5X25hbWUiOiJOYWlyIiwiaWF0IjoxNTE2MjM5MDIyfQ.AOj7Dccg1qmTZ7MxIJBaCWH7w7su-0SkPYSBPnsg9FA";
+  let currentView = "";
+  vscode.workspace.onDidChangeConfiguration(event => {
+    let affected = event.affectsConfiguration("workbench.colorTheme");
+    if(affected) {
+      activeColorTheme = vscode.window.activeColorTheme;
+      if(currentView === "askView") {
+        reloadAskView(currentView, activeColorTheme, context, accessToken);
       }
-
-    });
-  });
-
-  /**
-   * Top pick stackoverflow articles
-   */
-  let topPickStackoverflow = vscode.commands.registerCommand('extension.topPickStackoverflow', () => {
-
-    vscode.window.showQuickPick(ExtensionModel.topPickQuickInputItems).then((selectedTopPick: vscode.QuickPickItem | undefined) => {
-
-      if (selectedTopPick) {
-
-        // Get article selected artical with ID
-        const selectedArticle: any = ExtensionModel.topPickIds.find((element: any) => {
-          return element.label === selectedTopPick.label;
-        });
-
-        // Get language
-        const language: any = ExtensionModel.languages[0];
-
-        // Create webview panel
-        const stackoverflowPanel = createWebViewPanel(`SO: ${selectedTopPick.label}`, context.extensionPath);
-        // Set webview - svelte built to ./app/public/*
-        stackoverflowPanel.webview.html = AppPageHtml(context, stackoverflowPanel.webview, stackoverflowPanel);
-        // Post article Id to app, read in App.svelte as window.addEventListener("message"
-        stackoverflowPanel.webview.postMessage({
-          action: 'topPick',
-          language: language,
-          questionId: selectedArticle.id,
-          label: selectedArticle.label,
-          gif: selectedArticle.gif
-        });
-
-        // Show progress loader
-        windowProgress(stackoverflowPanel);
-
-      }
-    });
-  });
-
-  context.subscriptions.push(searchStackoverflow);
-  context.subscriptions.push(topPickStackoverflow);
-
-
-
-
-  // Register a URI handler for the authentication callback
-  vscode.window.registerUriHandler({
-    handleUri(uri: vscode.Uri): vscode.ProviderResult<void> {
-      // Add your code for what to do when the authentication completes here.
-      if (uri.path === '/auth-complete') {
-        vscode.window.showInformationMessage('Sign in successful!');
-      }
+    }
+  })
+  let searchView = vscode.commands.registerCommand('askguru.search', () => {
+    if(currentView === "searchView"  && WebviewPanel.currentPanel) {
+      return;
+    }
+    else {
+      currentView = "searchView"
+      WebviewPanel.kill();
+      initSearchPanel(activeColorTheme, context, accessToken);
     }
   });
 
+  let askView = vscode.commands.registerCommand('askguru.askQuestion', () => {
+    if(currentView === "askView" && WebviewPanel.currentPanel) {
+      return;
+    }
+    else {
+      currentView = "askView"
+      WebviewPanel.kill();
+      initAskPanel(activeColorTheme, context, accessToken);
+    }
+  });
 
-  // Register a sign in command
+  context.subscriptions.push(searchView);
+  context.subscriptions.push(askView);
+
+  const sidebar = new Sidebar(context.extensionUri);
+
   context.subscriptions.push(
-    vscode.commands.registerCommand(`extension.signin`, async () => {
-      // Get an externally addressable callback URI for the handler that the authentication provider can use
-      const callbackUri = await vscode.env.asExternalUri(
-        vscode.Uri.parse(`${vscode.env.uriScheme}://salil.askguru/auth-complete`)
-      );
-
-      // Add your code to integrate with an authentication provider here - we'll fake it.
-      vscode.env.clipboard.writeText(callbackUri.toString());
-      await vscode.window.showInformationMessage(
-        'Open the URI copied to the clipboard in a browser window to authorize.'
-      );
-    })
+    vscode.window.registerWebviewViewProvider("askguru-sidebar", sidebar)
   );
+}
 
+function reloadAskView(currentView:string, activeColorTheme: vscode.ColorTheme, context: vscode.ExtensionContext, accessToken: string) {
+  currentView = "askView"
+  WebviewPanel.kill();
+  initAskPanel(activeColorTheme, context, accessToken);
+}
+
+function initSearchPanel(activeColorTheme: vscode.ColorTheme, context: vscode.ExtensionContext, accessToken: string) {
+
+  const currentLanguageSelection = vscode.workspace.getConfiguration().get('askguru.view.language');
+  // Get sort type
+  const currentSortTypeSelection = vscode.workspace.getConfiguration().get('askguru.view.sort');
+  // Create webview panel
+  WebviewPanel.kill();
+  const searchPanel = WebviewPanel.createOrShow(`Search`, activeColorTheme, "search-view", context, context.extensionUri);
+  // Post search term, read in App.svelte as window.addEventListener("message"
+  searchPanel.webview.postMessage({
+    action: 'init',
+    query: '',
+    language: currentLanguageSelection,
+    sortType: currentSortTypeSelection,
+    accessToken: accessToken
+  });
+
+  // Show progress loader
+  windowProgress(searchPanel);
+
+  // Listen for changes to window title
+  changeWindowTitle(searchPanel);
+}
+
+function initAskPanel(activeColorTheme: vscode.ColorTheme, context: vscode.ExtensionContext, accessToken: string) {
+  const askPanel = WebviewPanel.createOrShow(`Ask Question`, activeColorTheme, "ask-view", context, context.extensionUri);
+  // const askPanel = createWebViewPanel(context,`Ask Question`, context.extensionPath);
+  // Set webview - svelte - built to ./app/public/*
+  // askPanel.webview.html = AppWebview(activeColorTheme, "ask-view", context, askPanel.webview, askPanel);
+  // askPanel.webview.html = AppWebview(activeColorTheme, "ask-view", context, askPanel.webview, askPanel);
+
+  const currentLanguageSelection = vscode.workspace.getConfiguration().get('askguru.view.language');
+  
+  askPanel.webview.postMessage({
+    action: 'ask',
+    language: currentLanguageSelection,
+    accessToken: accessToken
+  });
+
+  // Show progress loader
+  windowProgress(askPanel);
+
+  // Listen for changes to window title
+  changeWindowTitle(askPanel);
 }
 
 /**
@@ -125,9 +104,9 @@ export function activate(context: vscode.ExtensionContext) {
  * @param panelTitle string
  * @param path string
  */
-function createWebViewPanel(panelTitle: string, path: string): vscode.WebviewPanel {
+function createWebViewPanel(context: vscode.ExtensionContext, panelTitle: string, path: string): vscode.WebviewPanel {
   return vscode.window.createWebviewPanel('webview', panelTitle, vscode.ViewColumn.Beside, {
-    localResourceRoots: [vscode.Uri.file(posix.join(path, 'app', 'dist'))],
+    localResourceRoots: [context.extensionUri],
     enableScripts: true,
     retainContextWhenHidden: true
   });
