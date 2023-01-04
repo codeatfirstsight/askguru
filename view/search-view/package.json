@@ -17,6 +17,6 @@
   "dependencies": {
     "@stackoverflow/stacks-editor": "^0.8.3",
     "axios": "^1.2.2",
-    "pagedown": "^1.1.0"
+    "markdown-it": "^13.0.1"
   }
 }

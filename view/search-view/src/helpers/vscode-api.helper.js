@@ -1,21 +1,58 @@
-//const vscode = acquireVsCodeApi();
+const vscode = acquireVsCodeApi();
 
-function vscodeProgress(action, title, hasError) {
-  // vscode.postMessage({
-  //   command: "progress",
-  //   action: action,
-  //   title: title,
-  //   error: hasError,
-  //   errorMessage:
-  //     "An error occured fetching results. Check your internet connection."
-  // });
+function showProgress(action, title, hasError) {
+  vscode.postMessage({
+    command: "progress",
+    action: action,
+    title: title,
+    error: hasError,
+    errorMessage:
+      "An error occured fetching results. Check your internet connection."
+  });
 }
 
-function vscodeWindowTitle(title) {
-  // vscode.postMessage({
-  //   command: "titleChange",
-  //   title: `QaBox: ${title}`
-  // });
+function changeWindowTitle(title) {
+  vscode.postMessage({
+    command: "titleChange",
+    title: `${title}`
+  });
 }
 
-export { vscodeProgress, vscodeWindowTitle }
+function showInfoMessage(message) {
+  vscode.postMessage({
+    type: "info",
+    value: message
+  });
+}
+
+function showErrorMessage(message) {
+  vscode.postMessage({
+    type: "error",
+    value: message
+  });
+}
+
+function showLaunchLoginPageAuthErrorMessage(message) {
+  vscode.postMessage({
+    type: "actionableError",
+    actionableButtons: {
+      message,
+      actions : [
+        {
+          buttonName : "Authenticate",
+          actionType: "link",
+          link: "http://localhost:3000"
+        }
+      ]
+    }
+  });
+}
+
+function postMessage(type, value) {
+  vscode.postMessage({
+    type: type,
+    value: value
+  });
+}
+
+export { showProgress, changeWindowTitle, showInfoMessage, showErrorMessage, postMessage, showLaunchLoginPageAuthErrorMessage }

@@ -6,15 +6,22 @@
   import SearchNoResults from "./SearchNoResults.svelte";
   import SearchPager from "./SearchPager.svelte";
   import Loader from "../common/Loader.svelte";
+  import { onMount } from "svelte";
+  import { authStore } from '../stores/common'
 
   export let searchData;
   export let totalResults;
   export let isLoading;
+  let userAuthenticated = false;
+
+  onMount(()=> {
+    userAuthenticated = $authStore;
+  })
 </script>
 
 <!-- <SearchTitle {tagData} on:gotoTagLearnMore /> -->
 
-<SearchInput {isLoading} on:searchInput />
+<SearchInput {userAuthenticated} {isLoading} on:searchInput />
 
 <ResultsBar results={totalResults} {isLoading} on:filterChange />
 

@@ -1,11 +1,12 @@
 import * as vscode from "vscode";
-import { getNonce } from "./util/common.util";
+import { generateNonce } from "../helper/common.helper";
+import { AppConfig } from "../model/app-config.model";
 
-export class Sidebar implements vscode.WebviewViewProvider {
+export class SidebarViewWrapper implements vscode.WebviewViewProvider {
     _view?: vscode.WebviewView;
     _doc?: vscode.TextDocument;
 
-    constructor(private readonly _extensionUri: vscode.Uri) { }
+    constructor(private readonly _config:AppConfig, private readonly _extensionUri: vscode.Uri) { }
 
     public resolveWebviewView(webviewView: vscode.WebviewView) {
         this._view = webviewView;
@@ -18,7 +19,7 @@ export class Sidebar implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        webviewView.webview.onDidReceiveMessage(async (data) => {
+        webviewView.webview.onDidReceiveMessage((data) => {
             switch (data.type) {
                 case "searchQuestion": {
                     if (!data.value) {
@@ -74,7 +75,7 @@ export class Sidebar implements vscode.WebviewViewProvider {
         );
 
         // Use a nonce to only allow a specific script to be run.
-        const nonce = getNonce();
+        const nonce = generateNonce();
 
         return `
         <!DOCTYPE html>
@@ -85,12 +86,12 @@ export class Sidebar implements vscode.WebviewViewProvider {
                         Use a content security policy to only allow loading images from https or from our extension directory,
                         and only allow scripts that have a specific nonce.
             -->
-            <meta http-equiv="Content-Security-Policy" content="default-src 'self';frame-src https://giphy.com/; connect-src http://localhost:8088; img-src * 'self' data: vscode-resource: https:; script-src vscode-resource: https://unpkg.com/; style-src vscode-resource: https://unpkg.com/ 'unsafe-inline';" />
+            <meta http-equiv="Content-Security-Policy" content="default-src 'self';frame-src https://giphy.com/; connect-src http://localhost:8088; img-src * 'self' data: vscode-resource: https:; script-src vscode-resource: https://unpkg.com/ 'nonce-${nonce}'; style-src vscode-resource: https://unpkg.com/ 'unsafe-inline';" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <link href="${styleResetUri}" rel="stylesheet">
             <link href="${styleVSCodeUri}" rel="stylesheet">
             <link href="${styleMainUri}" rel="stylesheet">
-            <script defer src="${scriptUri}"></script>
+            <script nonce="${nonce}" defer src="${scriptUri}"></script>
         </head>
         <body>            
             <div id="app"></div>

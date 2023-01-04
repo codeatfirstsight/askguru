@@ -1,6 +1,6 @@
 {
   "name": "askguru",
-  "publisher": "salil",
+  "publisher": "codeatfirstsight",
   "displayName": "askguru",
   "description": "Ask questions",
   "version": "0.0.1",
@@ -13,6 +13,7 @@
   "activationEvents": [
     "onCommand:askguru.search",
     "onCommand:askguru.askQuestion",
+    "onCommand:askguru.invalidateToken",
     "onView:askguru-sidebar"
   ],
   "main": "./out/extension.js",
@@ -85,6 +86,11 @@
         "command": "askguru.search",
         "key": "ctrl+alt+s",
         "mac": "ctrl+cmd+s"
+      },
+      {
+        "command": "askguru.invalidateToken",
+        "key": "ctrl+alt+r",
+        "mac": "ctrl+cmd+r"
       }
     ]
   },

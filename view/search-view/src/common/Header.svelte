@@ -3,8 +3,6 @@
   import { section } from "../stores/common.js";
   import { createEventDispatcher } from "svelte";
 
-  export let extensionAction;
-
   const dispatch = createEventDispatcher();
   function goBack() {
     dispatch("goBack");

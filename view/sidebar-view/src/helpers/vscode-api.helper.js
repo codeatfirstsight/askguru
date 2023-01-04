@@ -1,6 +1,6 @@
 const vscode = acquireVsCodeApi();
 
-function vscodeProgress(action, title, hasError) {
+function showProgress(action, title, hasError) {
   vscode.postMessage({
     command: "progress",
     action: action,
@@ -11,10 +11,40 @@ function vscodeProgress(action, title, hasError) {
   });
 }
 
-function vscodeWindowTitle(title) {
+function changeWindowTitle(title) {
   vscode.postMessage({
     command: "titleChange",
-    title: `QaBox: ${title}`
+    title: `${title}`
+  });
+}
+
+function showInfoMessage(message) {
+  vscode.postMessage({
+    type: "info",
+    value: message
+  });
+}
+
+function showErrorMessage(message) {
+  vscode.postMessage({
+    type: "error",
+    value: message
+  });
+}
+
+function showLaunchLoginPageAuthErrorMessage(message) {
+  vscode.postMessage({
+    type: "actionableError",
+    actionableButtons: {
+      message,
+      actions : [
+        {
+          buttonName : "Authenticate",
+          actionType: "link",
+          link: "http://localhost:3000"
+        }
+      ]
+    }
   });
 }
 
@@ -25,4 +55,4 @@ function postMessage(type, value) {
   });
 }
 
-export { vscodeProgress, vscodeWindowTitle, postMessage }
+export { showProgress, changeWindowTitle, showInfoMessage, showErrorMessage, postMessage, showLaunchLoginPageAuthErrorMessage }

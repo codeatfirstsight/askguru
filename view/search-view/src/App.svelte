@@ -1,8 +1,9 @@
+
 <script>
   import { uriSegments } from "./stores/static-models.js";
   import { languages, i18n } from "./stores/i18n.js";
   import { page, section, searchQuery, authStore } from "./stores/common.js";
-  import { vscodeProgress, vscodeWindowTitle } from "./stores/vscode-api.js";
+  import { showProgress, changeWindowTitle, postMessage } from "./helpers/vscode-api.helper";
   import {
     selectedSearchFilter,
     resultFilters,
@@ -13,7 +14,8 @@
   import Search from "./search/Search.svelte";
   import Tag from "./tag/tag.svelte";
   import { onMount } from "svelte";
-    import SearchInput from "./search/SearchInput.svelte";
+  import SearchInput from "./search/SearchInput.svelte";
+  import Loader from "./common/Loader.svelte";
 
   let searchData;
   let questionId;
@@ -25,6 +27,7 @@
   let tagData;
   let gif;
   let messageEventRecieved = false;
+  let userAuthenticated = false;
 
   /**
    * Posted properties on search from extension.ts => showInputBox()
@@ -37,8 +40,10 @@
     messageEventRecieved = true;
     extensionAction = event.data.action;
     if (event.data.action === "init") {
+      console.log('addEventListener', event)
       isLoading = false;
       authStore.set(event.data.accessToken);
+      userAuthenticated = $authStore;
       // Set language
       $i18n = $languages.find((_) => _.language === event.data.language);
       // Find & set sort filter
@@ -51,6 +56,7 @@
     }
     else if (event.data.action === "search") {
       authStore.set(event.data.accessToken);
+      userAuthenticated = $authStore;
       searchQuery.set(event.data.query);
       // Set language
       $i18n = $languages.find((_) => _.language === event.data.language);
@@ -63,18 +69,11 @@
       section.set("search");
 
       search();
-    } else if (event.data.action === "topPick") {
-      vscodeProgress("stop", null, false);
-      authStore.set(event.data.accessToken);
-      $i18n = $languages[0];
-      questionId = event.data.questionId;
-      gif = event.data.gif;
-      questionTitle = event.data.label;
-      section.set("question");
     }
   });
 
   onMount(() => {
+    postMessage('onMount', "searchView");
     if(!$section || !$selectedSearchFilter || !messageEventRecieved) {
       $i18n = $languages[0];
       const searchFilterToSetAsSelected = resultFilters.find(
@@ -86,14 +85,14 @@
 
   function handleGotoQuestion(event) {
     section.set("question");
-    vscodeWindowTitle(event.detail.questionTitle);
+    changeWindowTitle(event.detail.questionTitle);
     questionId = event.detail.questionId;
     questionTitle = event.detail.questionTitle;
   }
 
   function handleGotoSearch(event) {
     section.set("search");
-    vscodeWindowTitle($searchQuery);
+    changeWindowTitle($searchQuery);
   }
 
   function handlePageSearch() {
@@ -119,7 +118,7 @@
   // Search by selected tag - Only gets the wiki info -
   // Full search still needs to be done based on tag name with added property &tagged= to uri
   function handleTagSelected(event) {
-    vscodeProgress("start", "Loading Tag Results", false);
+    showProgress("start", "Loading Tag Results", false);
     isLoading = true;
     window.scroll({ top: 0, behavior: "smooth" });
     selectedTag = event.detail.tag;
@@ -136,18 +135,18 @@
           tagSearch(selectedTag);
         } else {
           isLoading = false;
-          vscodeProgress("stop", null, true);
+          showProgress("stop", null, true);
         }
       })
       .catch(() => {
         isLoading = false;
-        vscodeProgress("stop", null, true);
+        showProgress("stop", null, true);
       });
   }
 
   function tagSearch(selectedTag) {
     isLoading = true;
-    vscodeWindowTitle(`[${selectedTag}]`);
+    changeWindowTitle(`[${selectedTag}]`);
     searchQuery.set(`[${selectedTag}]`);
 
     const site = `${$i18n.code}stackoverflow`;
@@ -160,14 +159,14 @@
         if (response.status === 200) {
           searchData = response.data.items;
           totalResults = response.data.total;
-          vscodeProgress("stop", null, false);
+          showProgress("stop", null, false);
         } else {
-          vscodeProgress("stop", null, true);
+          showProgress("stop", null, true);
         }
       })
       .catch(() => {
         isLoading = false;
-        vscodeProgress("stop", null, true);
+        showProgress("stop", null, true);
       });
   }
 
@@ -175,12 +174,12 @@
 
   function initSearch() {
     section.set("search");
-    vscodeWindowTitle($searchQuery);
+    changeWindowTitle($searchQuery);
     search();
   }
 
   function searchFromSearchInput() {
-    vscodeWindowTitle($searchQuery);
+    changeWindowTitle($searchQuery);
     search();
   }
 
@@ -193,7 +192,7 @@
       handleTagSelected({ detail: { tag: tag } }); // (o.0)
       return;
     }
-    vscodeProgress("start", "Loading Search Results", false);
+    showProgress("start", "Loading Search Results", false);
     isLoading = true;
     tagData = null;
     selectedTag = null;
@@ -224,43 +223,48 @@
           let responseBody = response.data;
           searchData = responseBody.data['SEARCH_BY_TEXT'].results;
           totalResults = searchData ? searchData.length : 0;
-          vscodeProgress("stop", null, false);
+          showProgress("stop", null, false);
         } else {
-          vscodeProgress("stop", null, true);
+          showProgress("stop", null, true);
         }
       })
       .catch(() => {
         isLoading = false;
-        vscodeProgress("stop", null, true);
+        showProgress("stop", null, true);
       });
   }
 </script>
 
-<Header on:goBack={handleGotoSearch} {extensionAction} />
-{#if $section === "init"}
-  <SearchInput isLoading={false} initialSearch={true} on:searchInput={initSearch} />
+{#if !messageEventRecieved}
+  <Loader />
+  {:else}
+    <Header on:goBack={handleGotoSearch} {extensionAction} />
+    {#if $section === "init"}
+      <SearchInput {userAuthenticated} isLoading={false} initialSearch={true} on:searchInput={initSearch} />
+    {/if}
+    {#if $section === "search"}
+      <Search
+        on:gotoQuestion={handleGotoQuestion}
+        on:gotoTagLearnMore={() => section.set("tag")}
+        on:searchByTag={handleTagSelected}
+        on:searchInput={searchFromSearchInput}
+        on:searchByPage={handlePageSearch}
+        on:filterChange={handleFilterChangeSearch}
+        {isLoading}
+        {searchData}
+        {tagData}
+        {totalResults}
+      />
+    {:else if $section === "question"}
+      <Question
+        on:searchByTag={handleTagFromQuestionSearch}
+        {questionId}
+        {questionTitle}
+        {extensionAction}
+        {gif}
+      />
+    {:else if $section === "tag"}
+      <Tag {tagData} />
+    {/if}
 {/if}
-{#if $section === "search"}
-  <Search
-    on:gotoQuestion={handleGotoQuestion}
-    on:gotoTagLearnMore={() => section.set("tag")}
-    on:searchByTag={handleTagSelected}
-    on:searchInput={searchFromSearchInput}
-    on:searchByPage={handlePageSearch}
-    on:filterChange={handleFilterChangeSearch}
-    {isLoading}
-    {searchData}
-    {tagData}
-    {totalResults}
-  />
-{:else if $section === "question"}
-  <Question
-    on:searchByTag={handleTagFromQuestionSearch}
-    {questionId}
-    {questionTitle}
-    {extensionAction}
-    {gif}
-  />
-{:else if $section === "tag"}
-  <Tag {tagData} />
-{/if}
+

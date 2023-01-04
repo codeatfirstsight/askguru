@@ -1,22 +1,18 @@
 <script>
   import { afterUpdate } from "svelte";
-  import {getSanitizingConverter} from 'pagedown';
   import Comments from "../common/Comments.svelte";
   import RowLayout from "../common/RowLayout.svelte";
   import ResultsBar from "../Common/ResultsBar.svelte";
   import User from "../Common/User.svelte";
   import Tags from "../Common/Tags.svelte";
   import QuestionAnswerIndicies from "./QuestionAnswerIndicies.svelte";
+  import { markdownToHtml } from '../helpers/mardown.helper'
 
   export let answers = [];
  
   afterUpdate(() => {
-    hljs.initHighlightingOnLoad();
+    hljs.highlightAll();
   })
-  function convertMarkDownTextToHtml(markdownText) {
-    let saneConv = getSanitizingConverter();
-    return saneConv.makeHtml(markdownText);
-  }
 
 </script>
 
@@ -51,7 +47,7 @@
 
         <div slot="right">
           <div>
-            {@html convertMarkDownTextToHtml(answer.text)}
+            {@html markdownToHtml(answer.text)}
           </div>
 
           {#if answer.tags}

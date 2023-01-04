@@ -1,4 +1,6 @@
 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-    <path style="fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);" d="M 8.888 9.159 L 6.644 10.9 L 1.425 7.022 L 7.228 1.682 L 13.464 5.893 L 10.093 8.352 L 7.542 6.072 L 6.415 7.009 L 9.375 9.455 L 9.725 14.174"/>
-    <ellipse style="fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);" cx="9.734" cy="14.479" rx="0.359" ry="0.305"/>
+    <path style="fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);" d="M 8.968 9.314 L 6.724 11.055 L 1.505 7.177 L 7.308 1.837 L 12.978 6.304 L 10.536 8.413 L 7.622 6.227 L 6.495 7.164 L 9.455 9.61 L 11.269 11.219"></path>
+    <ellipse style="fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);" cx="11.223" cy="15.176" rx="0.34" ry="0.311"></ellipse>
+    <path style="fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0);" transform="matrix(0.032449, 0, 0, 0.01966, -2.958648, -0.790461)" d="M 367.486 573.985 A 110.551 110.551 0 1 1 227.751 573.001 L 296.46 658.473 A 0.886 0.886 0 1 0 297.58 658.481 Z" shape="pie 297.015 659.164 0.886 110.551 39.602 321.205 1@d918eb5a"></path>
+    <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="11.105" y1="10.837" x2="11.259" y2="14.7"></line>
 </svg>

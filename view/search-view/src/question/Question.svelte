@@ -1,10 +1,6 @@
 <script>
   import { onMount, afterUpdate } from "svelte";
-  import { fade } from "svelte/transition";
-  import {getSanitizingConverter} from 'pagedown';
-  import { i18n } from "../stores/i18n.js";
-  import { vscodeWindowTitle, vscodeProgress } from "../stores/vscode-api.js";
-  import { uriSegments } from "../stores/static-models.js";
+  import { changeWindowTitle, showProgress } from "../helpers/vscode-api.helper";
   import axios from "axios";
   import Comments from "../Common/Comments.svelte";
   import RowLayout from "../Common/RowLayout.svelte";
@@ -14,30 +10,29 @@
   import QuestionTitle from "./QuestionTitle.svelte";
   import QuestionAnswers from "./QuestionAnswers.svelte";
   import QuestionIndices from "./QuestionIndices.svelte";
-  import QuestionNotice from "./QuestionNotice.svelte";
-  import QuestionClosed from "./QuestionClosed.svelte";
   import { authStore } from "../stores/common.js";
+  import { markdownToHtml } from '../helpers/mardown.helper'
   export let questionId;
   export let questionTitle;
   export let gif;
   export let extensionAction;
   let question;
-  let answers;
   let isLoading = true;
   let relatedQuestions;
+  
   onMount(() => {
     fetchQuestion();
   });
 
   afterUpdate(() => {
-    hljs.initHighlightingOnLoad();
-  })
+    hljs.highlightAll();
+  });
 
   function handleOnRelatedSearch(event) {
     isLoading = true;
     questionId = event.detail.questionId;
     questionTitle = event.detail.questionTitle;
-    vscodeWindowTitle(questionTitle);
+    changeWindowTitle(questionTitle);
     fetchQuestion();
   }
 
@@ -51,15 +46,15 @@
     //   isLoading = false;
     //   if (response.status === 200) {
     //     relatedQuestions = response.data.items;
-    //     vscodeProgress("stop", null, false);
+    //     showProgress("stop", null, false);
     //   } else {
-    //     vscodeProgress("stop", null, true);
+    //     showProgress("stop", null, true);
     //   }
     // });
   }
 
   // function fetchQuestion() {
-  //   vscodeProgress("start", "Loading Search Results", false);
+  //   showProgress("start", "Loading Search Results", false);
   //   const site = `${$i18n.code}stackoverflow`;
   //   const uri = `${uriSegments.baseUri}/questions/${questionId}?site=${site}&filter=${uriSegments.questionFilter}&key=${uriSegments.key}`;
   //
@@ -69,12 +64,13 @@
   //       question = response.data.items[0];
   //       fetchRelatedQuestions();
   //     } else {
-  //       vscodeProgress("stop", null, true);
+  //       showProgress("stop", null, true);
   //     }
   //   });
   // }
 
   function fetchQuestion() {
+    showProgress("start", "Loading Search Results", false);
     const authToken = $authStore;
     const qaboxUrl = `http://localhost:8088/public-api/open/questions/${questionId}`;
     let reqInstance = axios.create({
@@ -91,20 +87,15 @@
         if (response.status === 200) {
           let responseBody = response.data;
           question = responseBody.results[0];
-          vscodeProgress("stop", null, false);
+          showProgress("stop", null, false);
         } else {
-          vscodeProgress("stop", null, true);
+          showProgress("stop", null, true);
         }
       })
       .catch(() => {
         isLoading = false;
-        vscodeProgress("stop", null, true);
+        showProgress("stop", null, true);
       });
-  }
-
-  function convertMarkDownTextToHtml(markdownText) {
-    let saneConv = getSanitizingConverter();
-    return saneConv.makeHtml(markdownText);
   }
 
 
@@ -167,7 +158,7 @@
     <div slot="right">
 
       <div class="content">
-        {@html convertMarkDownTextToHtml(question.text)}
+        {@html markdownToHtml(question.text)}
       </div>
 
       {#if extensionAction !== 'topPick'}

@@ -8,7 +8,7 @@
     import { onMount } from "svelte";
     import { authStore } from "../stores/common.js";
     import QuestionTag from "./QuestionTag.svelte";
-    import { vscodeProgress } from '../helpers/vscode-api.helper';
+    import { showProgress, showInfoMessage, showLaunchLoginPageAuthErrorMessage } from '../helpers/vscode-api.helper';
     import Loader from '../common/Loader.svelte';
     import axios from "axios";
 
@@ -18,8 +18,12 @@
     let questionTags = [];
     let questionTagValue = "";
     let isLoading = false;
+    export let userAuthenticated = false;
 
     onMount(()=> {
+        if(!userAuthenticated) {
+            showLaunchLoginPageAuthErrorMessage("You must be authorized to search questions on Ask Guru.");
+        }
         stacksEditor = new StacksEditor(
             document.querySelector("#editor-container"),
             "",
@@ -42,7 +46,6 @@
 
 
     function handleAskQuestion() {
-        vscodeProgress("start", "Loading Search Results", false);
         isLoading = true;
 
         const tags = questionTags.map(tag => {
@@ -52,6 +55,7 @@
         });
 
         const authToken = $authStore;
+
         const qaboxUrl = "http://localhost:8088/api/common/post-question";
         const requestBody = {
             title,
@@ -61,7 +65,7 @@
         var headers = {
             withCredentials: true,
             headers: {
-                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzYWxpbHZuYWlyIiwiZ2l2ZW5fbmFtZSI6IlNhbGlsIiwiZmFtaWx5X25hbWUiOiJOYWlyIiwiaWF0IjoxNTE2MjM5MDIyfQ.AOj7Dccg1qmTZ7MxIJBaCWH7w7su-0SkPYSBPnsg9FA`,
+                Authorization: `Bearer ${authToken}`,
             },
         };
 
@@ -73,17 +77,24 @@
             if (response.status === 200) {
                 let responseBody = response.data;
                 console.log(responseBody);
-                vscodeProgress("stop", null, false);
-            } else {
-                vscodeProgress("stop", null, true);
+                showInfoMessage("Question Posted Successfully!");
+            } 
+            else {
+                showErrorMessage("Failed to post the question, please try later!");
             }
         })
         .catch(() => {
             isLoading = false;
-            vscodeProgress("stop", null, true);
+            showErrorMessage("Failed to post the question, please try later!");
         });
 
+        clearFields();
+    }
 
+    function clearFields() {
+        stacksEditor.content = "";
+        title = "";
+        questionTags = [];
     }
 
 
@@ -224,6 +235,7 @@
         <button
             class="s-btn s-btn__primary mt12 js-next-problem-details js-next-buttons"
             on:click={handleAskQuestion}
+            disabled={!userAuthenticated}
             type="button">Post your question</button
         >
     </div>

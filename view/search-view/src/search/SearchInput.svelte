@@ -1,13 +1,18 @@
 <script>
   import { createEventDispatcher, onMount } from "svelte";
-  import { page, searchQuery } from "../stores/common.js";
+  import { showLaunchLoginPageAuthErrorMessage } from "../helpers/vscode-api.helper.js";
+  import { page, searchQuery, authStore } from "../stores/common.js";
   import { i18n, languages } from "../stores/i18n.js";
 
   export let isLoading;
   export let initialSearch;
+  export let userAuthenticated = false;
   let searchQueryPreviousValue;
 
   onMount(() => {
+    if(!userAuthenticated && !$authStore) {
+      showLaunchLoginPageAuthErrorMessage("You must be authorized to search questions on Ask Guru.");
+    }
     searchQueryPreviousValue = $searchQuery;
     if(initialSearch) {
       $i18n = $languages[0];
@@ -64,6 +69,13 @@
     min-width: 100px;
     max-width: 100px;
   }
+
+  button:disabled,
+  button[disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+    text-decoration: none;
+  }
 </style>
 
 <svelte:window on:keydown={handleSearchByEnterKey} />
@@ -80,14 +92,19 @@
     </div>
   {/if}
 
-  <input type="text" bind:value={$searchQuery} />
+  <input type="text" bind:value={$searchQuery}  />
 
-  <button on:click={handleSearch} class="text-capitalize">
+  <button 
+    type="button" 
+    on:click={handleSearch} 
+    class="s-btn text-capitalize" 
+    disabled={!userAuthenticated}
+    title={!userAuthenticated ? 'You are not authenticated to do this action!' : 'Search'}
+    >
     {#if $i18n}
       {$i18n.text.search}
       {:else}
       Search
     {/if} 
   </button>
-
 </section>
