@@ -10,4 +10,8 @@ export class AppState {
   static getState(key: string): string | undefined {
     return this.globalState.get(key);
   }
+
+  static findState<T>(key: string): T {
+    return this.globalState.get(key) as T;
+  }
 }

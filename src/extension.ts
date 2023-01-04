@@ -15,22 +15,19 @@ export function activate(context: vscode.ExtensionContext) {
   TokenManager.globalState = context.globalState;
   AppState.globalState = context.globalState;
 
-  let activeColorTheme: vscode.ColorTheme = vscode.window.activeColorTheme;
-  
   AppState.setState('currentView', 'searchView');
-  AppState.setState('darkTheme',  (activeColorTheme.kind === vscode.ColorThemeKind.Dark) +"")
 
-  const searchView = registerView(appConfig, 'askguru.search', "searchView",  activeColorTheme, context);
+  const searchView = registerView(appConfig, 'askguru.search', "searchView", context);
 
-  const askView = registerView(appConfig, 'askguru.askQuestion', "askView",  activeColorTheme, context);
+  const askView = registerView(appConfig, 'askguru.askQuestion', "askView", context);
 
-  const invalidateToken = registerTokenInvalidation(appConfig, 'askguru.invalidateToken', findCurrentView(), activeColorTheme, context);
+  const invalidateToken = registerTokenInvalidation(appConfig, 'askguru.invalidateToken', findCurrentView(), context);
 
   const sidebarView = registerSidebarView(appConfig, "askguru-sidebar",  context);
   
-  const uriHandler = registerRedirectionUri(appConfig, findCurrentView(), activeColorTheme, context);
+  const uriHandler = registerRedirectionUri(appConfig, findCurrentView(), context);
 
-  workSpaceConfigChangeListener(appConfig, activeColorTheme, context);
+  workSpaceConfigChangeListener(appConfig, context);
   
   //register all subscriptions into the context
   context.subscriptions.push(sidebarView);
@@ -40,15 +37,17 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(uriHandler);
 }
 
-function registerRedirectionUri(appConfig: AppConfig, currentView:string, activeColorTheme: vscode.ColorTheme, context: vscode.ExtensionContext) {
+//register the extension redirect URI vscode://codeatfirstsight.askguru (we can hit this URL from browser and the control will come in below handler)
+function registerRedirectionUri(appConfig: AppConfig, currentView:string, context: vscode.ExtensionContext) {
   const handleUri = (uri: vscode.Uri) => {
     currentView = findCurrentView();
-    activeColorTheme = vscode.window.activeColorTheme;
 		const queryParams = new URLSearchParams(uri.query);
 		if (queryParams.has('accessToken') && queryParams.get('accessToken') as string !== '') {
-      vscode.window.showInformationMessage("Authenticated successfully, you can now use the application.")
+      const userName = queryParams.get('userName')  as string;
+      AppState.setState("userName", userName);
+      vscode.window.showInformationMessage(`Hi ${userName}, welcome to the Ask Guru.`)
 			TokenManager.setToken(queryParams.get('accessToken') as string);
-      reloadWindowPanel(appConfig, currentView, activeColorTheme, context);
+      reloadWindowPanel(appConfig, currentView, context);
 		}
     else {
       vscode.window.showErrorMessage("Authentication failed please reauthenticate from Ask Guru website.")
@@ -62,39 +61,33 @@ function registerSidebarView(appConfig: AppConfig, command: string, context: vsc
   return vscode.window.registerWebviewViewProvider(command, sidebar);
 }
 
-function registerTokenInvalidation(appConfig: AppConfig, command:string, currentView:string, activeColorTheme: vscode.ColorTheme, context: vscode.ExtensionContext) {
+function registerTokenInvalidation(appConfig: AppConfig, command:string, currentView:string, context: vscode.ExtensionContext) {
   return vscode.commands.registerCommand(command, () => {
-    activeColorTheme = vscode.window.activeColorTheme;
     vscode.window
       .showWarningMessage("Are you sure you want to invalidate the token?", "Yes", "No")
       .then(answer => {
         if (answer === "Yes") {
           TokenManager.clearToken();
-          reloadWindowPanel(appConfig, currentView, activeColorTheme, context);
+          reloadWindowPanel(appConfig, currentView, context);
         }
       })
   })
 }
 
 function findCurrentView() {
-  return AppState.getState('currentView') as string;
+  return AppState.findState<string>('currentView');
 }
 
-function darkTheme() {
-  return AppState.getState('darkTheme') as string === "true";
-}
-
-function registerView(appConfig: AppConfig, command:string, view:string, activeColorTheme: vscode.ColorTheme, context: vscode.ExtensionContext) {
+function registerView(appConfig: AppConfig, command:string, view:string, context: vscode.ExtensionContext) {
   return vscode.commands.registerCommand(command, () => {
     let currentView = findCurrentView();
-    activeColorTheme = vscode.window.activeColorTheme;
     if(view === "searchView") {
       if(WebviewWrapper.currentPanel && view === currentView) {
         return;
       }
       else {
         currentView = "searchView";
-        initSearchView(appConfig, activeColorTheme, context);
+        initSearchView(appConfig, context);
       }
     }
     if(view === "askView") {
@@ -103,48 +96,50 @@ function registerView(appConfig: AppConfig, command:string, view:string, activeC
       }
       else {
         currentView = "askView";
-        initAskView(appConfig, activeColorTheme, context);
+        initAskView(appConfig, context);
       }
     }
     AppState.setState('currentView', currentView);
   });
 }
 
-function workSpaceConfigChangeListener(appConfig: AppConfig, activeColorTheme: vscode.ColorTheme, context: vscode.ExtensionContext) {
+// listen to the workspace config changes
+// as of now color theme changes is subscribed
+function workSpaceConfigChangeListener(appConfig: AppConfig, context: vscode.ExtensionContext) {
   vscode.workspace.onDidChangeConfiguration(event => {
-    let currentView = findCurrentView();
-    let affected = event.affectsConfiguration("workbench.colorTheme");
-    if(affected) {
-      activeColorTheme = vscode.window.activeColorTheme;
-      reloadWindowPanel(appConfig, currentView, activeColorTheme, context);
-    }
+    onChangeWorkspaceColorTheme(event, appConfig, context);
   });
 }
 
-function reloadWindowPanel(appConfig: AppConfig, currentView: string, activeColorTheme: vscode.ColorTheme, context: vscode.ExtensionContext) {
-  activeColorTheme = vscode.window.activeColorTheme;
+function onChangeWorkspaceColorTheme(event:vscode.ConfigurationChangeEvent, appConfig: AppConfig, context: vscode.ExtensionContext) {
+  let currentView = findCurrentView();
+  let affected = event.affectsConfiguration("workbench.colorTheme");
+  if(affected) {
+    reloadWindowPanel(appConfig, currentView, context);
+  }
+}
+
+function reloadWindowPanel(appConfig: AppConfig, currentView: string, context: vscode.ExtensionContext) {
   if(currentView === "askView") {
-    initAskView(appConfig, activeColorTheme, context);
+    initAskView(appConfig, context);
   }
   else if(currentView === "searchView") {
-    initSearchView(appConfig, activeColorTheme, context);
+    initSearchView(appConfig, context);
   }
 }
 
-function initSearchView(appConfig: AppConfig, activeColorTheme: vscode.ColorTheme, context: vscode.ExtensionContext) {
-  activeColorTheme = vscode.window.activeColorTheme;
+function initSearchView(appConfig: AppConfig, context: vscode.ExtensionContext) {
   WebviewWrapper.kill();
-  initSearchPanel(appConfig, activeColorTheme, context);
+  initSearchPanel(appConfig, context);
 }
 
-function initAskView(appConfig: AppConfig, activeColorTheme: vscode.ColorTheme, context: vscode.ExtensionContext) {
-  activeColorTheme = vscode.window.activeColorTheme;
+function initAskView(appConfig: AppConfig, context: vscode.ExtensionContext) {
   WebviewWrapper.kill();
-  initAskPanel(appConfig, activeColorTheme, context);
+  initAskPanel(appConfig, context);
 }
 
-function initSearchPanel(appConfig: AppConfig, activeColorTheme: vscode.ColorTheme, context: vscode.ExtensionContext) {
-  activeColorTheme = vscode.window.activeColorTheme;
+function initSearchPanel(appConfig: AppConfig, context: vscode.ExtensionContext) {
+  let activeColorTheme = vscode.window.activeColorTheme;
 
   const searchPanel = WebviewWrapper.createOrShow(appConfig, `Search`, activeColorTheme, "search-view", context, context.extensionUri);
   // Post search term, read in App.svelte as window.addEventListener("message"
@@ -162,8 +157,8 @@ function initSearchPanel(appConfig: AppConfig, activeColorTheme: vscode.ColorThe
   windowPanelSvelteLifecycleListener(searchPanel);
 }
 
-function initAskPanel(appConfig: AppConfig, activeColorTheme: vscode.ColorTheme, context: vscode.ExtensionContext) {
-  activeColorTheme = vscode.window.activeColorTheme;
+function initAskPanel(appConfig: AppConfig, context: vscode.ExtensionContext) {
+  let activeColorTheme = vscode.window.activeColorTheme;
   const askPanel = WebviewWrapper.createOrShow(appConfig, `Ask Question`, activeColorTheme, "ask-view", context, context.extensionUri);
 
   // Show progress loader
@@ -180,7 +175,8 @@ function initAskPanel(appConfig: AppConfig, activeColorTheme: vscode.ColorTheme,
 }
 
 
-
+// listen for the svelete app lifecycle hooks then fire the message events
+// so that there is no loss of of messages
 function windowPanelSvelteLifecycleListener(panel: vscode.WebviewPanel) {
   panel.webview.onDidReceiveMessage((data) => {
     switch (data.type) {
@@ -191,6 +187,7 @@ function windowPanelSvelteLifecycleListener(panel: vscode.WebviewPanel) {
   });
 }
 
+//send message event to the webview (svelte apps)
 function sendMessageEvent(panel: vscode.WebviewPanel, viewName:string) {
   const currentLanguageSelection = vscode.workspace.getConfiguration().get('askguru.view.language');
   // Get sort type
@@ -199,7 +196,8 @@ function sendMessageEvent(panel: vscode.WebviewPanel, viewName:string) {
     panel.webview.postMessage({
       action: 'ask',
       language: currentLanguageSelection,
-      accessToken: TokenManager.getToken()
+      accessToken: TokenManager.getToken(),
+      userName: AppState.findState("userName")
     });
   }
   else if(viewName === "searchView") {
@@ -207,7 +205,8 @@ function sendMessageEvent(panel: vscode.WebviewPanel, viewName:string) {
       action: 'init',
       language: currentLanguageSelection,
       sortType: currentSortTypeSelection,
-      accessToken: TokenManager.getToken()
+      accessToken: TokenManager.getToken(),
+      userName: AppState.findState("userName")
     });
   }
 }

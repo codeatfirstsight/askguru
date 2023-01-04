@@ -134,6 +134,7 @@
     transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
     flex-shrink: 0;
     user-select: none;
+    color: var(--vscode-icon-foreground);
   }
 
   .activeIcon {

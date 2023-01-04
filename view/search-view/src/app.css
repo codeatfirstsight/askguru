@@ -7,11 +7,11 @@ body {
 }
 
 body {
-  margin: 0;
   padding: 10px 24px 24px;
   box-sizing: border-box;
-  max-width: 900px;
+  max-width: 1050px;
   margin: 0 auto;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
 
 button {

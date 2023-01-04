@@ -58,7 +58,7 @@
             <User
                 user={{link:"", profile_image:"", display_name:answer.creatorName, reputation:0}}
                 createdDate={answer.createdAtTime}
-                isQuestion={true} />
+                isQuestion={false} />
           </div>
 
           {#if answer.comments}

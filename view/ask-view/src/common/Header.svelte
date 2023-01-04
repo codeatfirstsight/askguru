@@ -1,6 +1,5 @@
 <script>
   import { i18n } from "../stores/i18n.js";
-  import { section } from "../stores/common.js";
   import { createEventDispatcher } from "svelte";
   import { userNameStore } from "../stores/common";
 
@@ -16,24 +15,6 @@
     color: var(--vscode-textLink-foreground);
     margin: 0;
   }
-  .back {
-    cursor: pointer;
-  }
-  .back span::before {
-    border-style: solid;
-    border-width: 2px 2px 0 0;
-    content: "";
-    display: inline-block;
-    height: 0.45em;
-    left: 0;
-    position: relative;
-    top: 6px;
-    transform: rotate(-135deg);
-    vertical-align: top;
-    width: 0.45em;
-    cursor: pointer;
-  }
-  
   .name-label {
     color: var(--vscode-textLink-foreground);
     margin-left: 0.2rem!important;
@@ -66,18 +47,8 @@
     color: var(--vscode-textLink-foreground);
     margin-left: 12px;
   }
-
-
 </style>
-
-
 <div style="display: flex; justify-content: space-between;">
-  {#if $section === 'question' || $section === 'tag'}
-    <div class="back text-capitalize" on:keypress={goBack} on:click={goBack}>
-      <span />
-      {$i18n.text.back_to_search_results}
-    </div>
-  {:else}
   <h3 class="text-capitalize">
     Ask
     <strong>Guru</strong>
@@ -87,7 +58,6 @@
       </small>
     {/if}
   </h3>
-  {/if}
   {#if $userNameStore}
     <div class="user_info">
       <div class="user__svg-icon-container">

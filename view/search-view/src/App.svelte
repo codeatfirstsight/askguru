@@ -2,7 +2,7 @@
 <script>
   import { uriSegments } from "./stores/static-models.js";
   import { languages, i18n } from "./stores/i18n.js";
-  import { page, section, searchQuery, authStore } from "./stores/common.js";
+  import { page, section, searchQuery, authStore, userNameStore } from "./stores/common.js";
   import { showProgress, changeWindowTitle, postMessage } from "./helpers/vscode-api.helper";
   import {
     selectedSearchFilter,
@@ -43,6 +43,7 @@
       console.log('addEventListener', event)
       isLoading = false;
       authStore.set(event.data.accessToken);
+      userNameStore.set(event.data.userName);
       userAuthenticated = $authStore;
       // Set language
       $i18n = $languages.find((_) => _.language === event.data.language);
@@ -56,6 +57,7 @@
     }
     else if (event.data.action === "search") {
       authStore.set(event.data.accessToken);
+      userNameStore.set(event.data.userName);
       userAuthenticated = $authStore;
       searchQuery.set(event.data.query);
       // Set language

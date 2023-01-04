@@ -104,9 +104,9 @@
   <Loader />
 {/if}
 
-<div style="margin:50px;padding:20px .theme-dark__forced">
+<div style="margin-top:50px;padding:20px .theme-dark__forced">
     <div
-        class="flex--item w70 lg:w100 bg-white bar-sm p24 ba bc-black-075 fl-shrink0 js-post-title-section"
+        class="flex--item lg:w100 bg-white bar-sm p24 ba bc-black-075 fl-shrink0 js-post-title-section"
         id="post-title"
     >
         <div class="d-flex gs4 gsy fd-column js-stacks-validation">
@@ -156,7 +156,7 @@
     </div>
 
     <div
-        class="flex--item bg-white bar-sm ba bc-black-075 w70 lg:w100 fl-shrink0"
+        class="flex--item bg-white bar-sm ba bc-black-075 lg:w100 fl-shrink0"
         id="post-problem-details"
     >
         <div class="js-problem-details-overlay t0 b0 p24">
@@ -178,7 +178,7 @@
         </div>
     </div>
     <div
-        class="flex--item w70 lg:w100 bg-white bar-sm p24 ba bc-black-075 fl-shrink0 js-post-title-section"
+        class="flex--item lg:w100 bg-white bar-sm p24 ba bc-black-075 fl-shrink0 js-post-title-section"
         id="post-title"
     >
         <div class="d-flex gs4 gsy fd-column js-stacks-validation">

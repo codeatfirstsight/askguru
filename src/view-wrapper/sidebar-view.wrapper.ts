@@ -86,11 +86,12 @@ export class SidebarViewWrapper implements vscode.WebviewViewProvider {
                         Use a content security policy to only allow loading images from https or from our extension directory,
                         and only allow scripts that have a specific nonce.
             -->
-            <meta http-equiv="Content-Security-Policy" content="default-src 'self';frame-src https://giphy.com/; connect-src http://localhost:8088; img-src * 'self' data: vscode-resource: https:; script-src vscode-resource: https://unpkg.com/ 'nonce-${nonce}'; style-src vscode-resource: https://unpkg.com/ 'unsafe-inline';" />
+            <meta http-equiv="Content-Security-Policy" content="default-src 'self';frame-src https://giphy.com/; connect-src http://localhost:8088; img-src * 'self' data: vscode-resource: https:; script-src vscode-resource: https://unpkg.com/ 'nonce-${nonce}'; style-src vscode-resource: https://unpkg.com/ https://fonts.cdnfonts.com/ 'unsafe-inline';" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <link href="${styleResetUri}" rel="stylesheet">
             <link href="${styleVSCodeUri}" rel="stylesheet">
             <link href="${styleMainUri}" rel="stylesheet">
+            <link href="https://fonts.cdnfonts.com/css/roboto" rel="stylesheet">                
             <script nonce="${nonce}" defer src="${scriptUri}"></script>
         </head>
         <body>            
