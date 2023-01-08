@@ -2,7 +2,7 @@
 <script>
   import { uriSegments } from "./stores/static-models.js";
   import { languages, i18n } from "./stores/i18n.js";
-  import { page, section, searchQuery, authStore, userNameStore } from "./stores/common.js";
+  import { page, section, searchQuery, authStore, userNameStore, appConfigStore } from "./stores/common.js";
   import { showProgress, changeWindowTitle, postMessage } from "./helpers/vscode-api.helper";
   import {
     selectedSearchFilter,
@@ -28,6 +28,7 @@
   let gif;
   let messageEventRecieved = false;
   let userAuthenticated = false;
+  let paginatedData;
 
   /**
    * Posted properties on search from extension.ts => showInputBox()
@@ -44,6 +45,7 @@
       isLoading = false;
       authStore.set(event.data.accessToken);
       userNameStore.set(event.data.userName);
+      appConfigStore.set(event.data.appConfig);
       userAuthenticated = $authStore;
       // Set language
       $i18n = $languages.find((_) => _.language === event.data.language);
@@ -58,6 +60,7 @@
     else if (event.data.action === "search") {
       authStore.set(event.data.accessToken);
       userNameStore.set(event.data.userName);
+      appConfigStore.set(event.data.appConfig);
       userAuthenticated = $authStore;
       searchQuery.set(event.data.query);
       // Set language
@@ -199,16 +202,21 @@
     tagData = null;
     selectedTag = null;
 
-    const site = `${$i18n.code}stackoverflow`;
-    const uri = `${uriSegments.baseUri}/search/advanced?q=${$searchQuery}&page=${$page}&pagesize=10&order=${$selectedSearchFilter.apiOrder}&sort=${$selectedSearchFilter.apiSort}&site=${site}&filter=${uriSegments.searchFilter}&key=${uriSegments.key}`;
     const authToken = $authStore;
-    const qaboxUrl = "http://localhost:8088/public-api/open/component/generate";
+    const apiBaseUrl = $appConfigStore.apiBaseUrl;
+    const qaboxUrl = `${apiBaseUrl}/public-api/open/component/generate`;
     const requestBody = {
       config: { 
         type: "SEARCH_QUESTIONS", 
         components: ["SEARCH_BY_TEXT"] 
       },
-      inputParams: { searchText: $searchQuery },
+      inputParams: { 
+        searchText: $searchQuery,
+        paginationRequest: {
+          currentPage: $page,
+          pageSize: 10 
+        }
+      },
     };
     let reqInstance = axios.create({
       headers: {
@@ -223,8 +231,9 @@
         console.log(response)
         if (response.status === 200) {
           let responseBody = response.data;
-          searchData = responseBody.data['SEARCH_BY_TEXT'].results;
-          totalResults = searchData ? searchData.length : 0;
+          paginatedData = responseBody.data['SEARCH_BY_TEXT'].paginatedData;
+          searchData = paginatedData.results;
+          totalResults = paginatedData.totalRows;
           showProgress("stop", null, false);
         } else {
           showProgress("stop", null, true);
@@ -240,7 +249,7 @@
 {#if !messageEventRecieved}
   <Loader />
   {:else}
-    <Header on:goBack={handleGotoSearch} {extensionAction} />
+    <Header on:goBack={handleGotoSearch} {extensionAction} {userAuthenticated} />
     {#if $section === "init"}
       <SearchInput {userAuthenticated} isLoading={false} initialSearch={true} on:searchInput={initSearch} />
     {/if}
@@ -256,6 +265,7 @@
         {searchData}
         {tagData}
         {totalResults}
+        {paginatedData}
       />
     {:else if $section === "question"}
       <Question

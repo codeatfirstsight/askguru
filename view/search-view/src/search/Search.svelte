@@ -1,6 +1,5 @@
 <script>
   import SearchInput from "./SearchInput.svelte";
-  import SearchTitle from "./SearchTitle.svelte";
   import ResultsBar from "../Common/ResultsBar.svelte";
   import SearchItem from "./SearchItem.svelte";
   import SearchNoResults from "./SearchNoResults.svelte";
@@ -13,17 +12,16 @@
   export let totalResults;
   export let isLoading;
   let userAuthenticated = false;
+  export let paginatedData;
 
   onMount(()=> {
     userAuthenticated = $authStore;
   })
 </script>
 
-<!-- <SearchTitle {tagData} on:gotoTagLearnMore /> -->
-
 <SearchInput {userAuthenticated} {isLoading} on:searchInput />
 
-<ResultsBar results={totalResults} {isLoading} on:filterChange />
+<ResultsBar results={totalResults} {isLoading} {paginatedData} on:filterChange />
 
 {#if isLoading}
   <Loader />

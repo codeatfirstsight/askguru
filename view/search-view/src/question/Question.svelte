@@ -10,8 +10,8 @@
   import QuestionTitle from "./QuestionTitle.svelte";
   import QuestionAnswers from "./QuestionAnswers.svelte";
   import QuestionIndices from "./QuestionIndices.svelte";
-  import { authStore } from "../stores/common.js";
-  import { markdownToHtml } from '../helpers/mardown.helper'
+  import { authStore, appConfigStore } from "../stores/common.js";
+  import { markdownToHtml } from '../helpers/mardown.helper';
   export let questionId;
   export let questionTitle;
   export let gif;
@@ -71,8 +71,9 @@
 
   function fetchQuestion() {
     showProgress("start", "Loading Search Results", false);
+    const apiBaseUrl = $appConfigStore.apiBaseUrl;
     const authToken = $authStore;
-    const qaboxUrl = `http://localhost:8088/public-api/open/questions/${questionId}`;
+    const qaboxUrl = `${apiBaseUrl}/public-api/open/questions/${questionId}`;
     let reqInstance = axios.create({
       headers: {
         Authorization: `Bearer ${authToken}`,

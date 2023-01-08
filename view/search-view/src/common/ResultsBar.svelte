@@ -10,6 +10,7 @@
 
   export let results;
   export let isLoading;
+  export let paginatedData;
 
   $: total = formatNumber(results);
   $: title = $section === "search" ? $i18n.text.results : $i18n.text.answers;
@@ -46,7 +47,11 @@
   <div>
     <header>
       {#if results > 0}
-        {total} {title}
+        {#if $section === "search"}
+            {paginatedData.fromRow}-{paginatedData.toRow} of {total} {title} 
+          {:else}
+            {total} {title}
+        {/if}
       {:else if results === 0}{titleForNoResults}{:else if isLoading}&nbsp;{/if}
     </header>
   </div>

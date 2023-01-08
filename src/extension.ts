@@ -154,7 +154,7 @@ function initSearchPanel(appConfig: AppConfig, context: vscode.ExtensionContext)
   windowMessage(searchPanel);
 
   //listen for svelte onMount
-  windowPanelSvelteLifecycleListener(searchPanel);
+  windowPanelSvelteLifecycleListener(searchPanel, appConfig);
 }
 
 function initAskPanel(appConfig: AppConfig, context: vscode.ExtensionContext) {
@@ -171,24 +171,24 @@ function initAskPanel(appConfig: AppConfig, context: vscode.ExtensionContext) {
   windowMessage(askPanel);
 
   //listen for svelte onMount
-  windowPanelSvelteLifecycleListener(askPanel);
+  windowPanelSvelteLifecycleListener(askPanel, appConfig);
 }
 
 
 // listen for the svelete app lifecycle hooks then fire the message events
 // so that there is no loss of of messages
-function windowPanelSvelteLifecycleListener(panel: vscode.WebviewPanel) {
+function windowPanelSvelteLifecycleListener(panel: vscode.WebviewPanel, appConfig: AppConfig) {
   panel.webview.onDidReceiveMessage((data) => {
     switch (data.type) {
         case "onMount": {
-          sendMessageEvent(panel, data.value);
+          sendMessageEvent(panel, data.value, appConfig);
         }
     }
   });
 }
 
 //send message event to the webview (svelte apps)
-function sendMessageEvent(panel: vscode.WebviewPanel, viewName:string) {
+function sendMessageEvent(panel: vscode.WebviewPanel, viewName:string, appConfig: AppConfig) {
   const currentLanguageSelection = vscode.workspace.getConfiguration().get('askguru.view.language');
   // Get sort type
   const currentSortTypeSelection = vscode.workspace.getConfiguration().get('askguru.view.sort');
@@ -197,7 +197,8 @@ function sendMessageEvent(panel: vscode.WebviewPanel, viewName:string) {
       action: 'ask',
       language: currentLanguageSelection,
       accessToken: TokenManager.getToken(),
-      userName: AppState.findState("userName")
+      userName: AppState.findState("userName"),
+      appConfig: appConfig
     });
   }
   else if(viewName === "searchView") {
@@ -206,7 +207,8 @@ function sendMessageEvent(panel: vscode.WebviewPanel, viewName:string) {
       language: currentLanguageSelection,
       sortType: currentSortTypeSelection,
       accessToken: TokenManager.getToken(),
-      userName: AppState.findState("userName")
+      userName: AppState.findState("userName"),
+      appConfig: appConfig
     });
   }
 }

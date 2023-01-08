@@ -1,11 +1,11 @@
 <script>
 	import { i18n, languages } from './stores/i18n.js';
-  import { authStore, userNameStore } from "./stores/common.js";
+  import { authStore, userNameStore, appConfigStore } from "./stores/common.js";
   import QuestionAsk from "./question/QuestionAsk.svelte";
   import { onMount } from 'svelte';
   import { postMessage } from "./helpers/vscode-api.helper";
   import Loader from './common/Loader.svelte';
-    import Header from './common/Header.svelte';
+  import Header from './common/Header.svelte';
   let extensionAction;
   let messageEventRecieved = false;
   let userAuthenticated = false;
@@ -21,6 +21,7 @@
     if (event.data.action === "ask") {
       authStore.set(event.data.accessToken);
       userNameStore.set(event.data.userName);
+      appConfigStore.set(event.data.appConfig);
       // Set language
       $i18n = $languages.find((_) => _.language === event.data.language);
     } 
@@ -35,7 +36,7 @@
 {#if !messageEventRecieved}
   <Loader />
   {:else}
-  <Header/>
+  <Header {userAuthenticated} />
   <QuestionAsk {userAuthenticated} />
 {/if}
 

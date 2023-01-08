@@ -38,16 +38,6 @@
     margin-right: 20px;
     font-weight: bold;
   }
-  .metrics span.view-related-questions,
-  .metrics span.hide-related-questions {
-    margin-right: 0;
-  }
-  .view-related-questions {
-    float: right;
-  }
-  .hide-related-questions {
-    color: var(--vscode-textLink-activeForeground);
-  }
 </style>
 
 <h1>
@@ -69,23 +59,5 @@
       {$i18n.text.viewed}
       <span>{totalViews} {$i18n.text.times}</span>
     {/if}
-
-    <!-- {#if extensionAction !== 'topPick'}
-      <span
-        class="link view-related-questions"
-        class:hide-related-questions={showRelatedQuestions}
-        on:click={toggleRelatedQuestions}>
-        {#if !showRelatedQuestions}
-          {$i18n.text.view_related_questions}
-        {:else}{$i18n.text.hide_related_questions}{/if}
-      </span>
-    {/if} -->
-
-    <!-- {#if showRelatedQuestions}
-      <QuestionsRelated
-        {relatedQuestions}
-        on:closeRelatedQuestions={toggleRelatedQuestions}
-        on:relatedQuestionSearch />
-    {/if} -->
   </div>
 </div>

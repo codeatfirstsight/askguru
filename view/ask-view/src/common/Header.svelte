@@ -4,6 +4,7 @@
   import { userNameStore } from "../stores/common";
 
   const dispatch = createEventDispatcher();
+  export let userAuthenticated = false;
   function goBack() {
     dispatch("goBack");
   }
@@ -58,7 +59,7 @@
       </small>
     {/if}
   </h3>
-  {#if $userNameStore}
+  {#if $userNameStore && userAuthenticated}
     <div class="user_info">
       <div class="user__svg-icon-container">
         <svg class="user__svg-icon" focusable="false" viewBox="0 0 24 24" aria-hidden="true" role="presentation">

@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 
 const page = writable(1);
 const section = writable("init");
+const appConfigStore = writable();
 const authStore = writable();
 const userNameStore = writable();
 const searchQuery = writable("");
@@ -16,4 +17,4 @@ function formatNumber(num) {
   }
 };
 
-export { page, section, formatNumber, searchQuery, authStore, userNameStore }
+export { page, section, formatNumber, searchQuery, authStore, userNameStore, appConfigStore }

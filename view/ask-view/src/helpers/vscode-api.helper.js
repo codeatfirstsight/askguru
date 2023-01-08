@@ -1,13 +1,12 @@
 const vscode = acquireVsCodeApi();
 
-function showProgress(action, title, hasError) {
+function showProgress(action, title, hasError, errorMessage) {
   vscode.postMessage({
     command: "progress",
     action: action,
     title: title,
     error: hasError,
-    errorMessage:
-      "An error occured fetching results. Check your internet connection."
+    errorMessage: errorMessage ? errorMessage : "An error occured fetching results. Check your internet connection."
   });
 }
 
