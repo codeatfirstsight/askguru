@@ -104,7 +104,12 @@
     "search-view": "npm run build --prefix  view/search-view",
     "sidebar-view": "npm run build --prefix  view/sidebar-view",
     "build-views": "concurrently \"npm run ask-view\" \"npm run search-view\" \"npm run sidebar-view\" ",
-    "build": "concurrently \"npm run build-views\" \"npm run compile\" "
+    "build": "concurrently \"npm run build-views\" \"npm run compile\" ",
+    "ask-view-init": "npm install --prefix  view/ask-view",
+    "search-view-init": "npm install --prefix  view/search-view",
+    "sidebar-view-init": "npm install --prefix  view/sidebar-view",
+    "npm-init-views": "concurrently \"npm run ask-view-init\" \"npm run search-view-init\" \"npm run sidebar-view-init\" ",
+    "npm-init": "concurrently \"npm run npm-init-views\" \"npm install\" "
   },
   "devDependencies": {
     "@types/glob": "^8.0.0",
