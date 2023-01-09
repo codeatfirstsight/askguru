@@ -1,15 +1,15 @@
 <style>
   .container {
-    display: table;
+    display: flex;
     width: 100%;
   }
   .container .col {
-    display: table-cell;
     padding: 10px 0px 10px 10px;
   }
   .container .col:first-child {
     text-align: center;
     width: 10%;
+    padding-top: 18px;
   }
   .container .col:last-child {
     text-align: left;
