@@ -4,28 +4,38 @@
 </script>
 
 <style>
-  h2 {
+  h1 {
     margin: 0;
+    font-size: 1.7rem;
   }
   .vote-up,
   .vote-down {
-    font-size: 22px;
+    width: 40px;
+    height: 35px;
+    margin: 0 auto;
+    color: var(--vscode-icon-foreground);
   }
+  .MuiSvgIcon-root {
+    fill: currentColor;
+  }
+
   .answer-tick {
     fill: #45a163;
-    margin-top: 16px;
+    margin: 0 auto;
   }
 </style>
 
-{#if score > 0}
-  <div class="vote-up">⯅</div>
-{/if}
-<div>
-  <h2>{score}</h2>
+<div class="vote-up">
+  <svg class="MuiSvgIcon-root mlft2" focusable="false" viewBox="0 0 24 24" aria-hidden="true" role="presentation" display="This question is useful">
+    <path d="M7 14l5-5 5 5z"></path>
+  </svg>
 </div>
-{#if score < 0}
-  <div class="vote-down">⯆</div>
-{/if}
+<h1>{score}</h1>
+<div class="vote-down" style="margin-top: -2px;">
+  <svg class="MuiSvgIcon-root mlft2" focusable="false" viewBox="0 0 24 24" aria-hidden="true" role="presentation" display="This question is useful">
+    <path d="M7 10l5 5 5-5z"></path>
+  </svg>
+</div>
 {#if isAccepted}
   <svg
     aria-hidden="true"

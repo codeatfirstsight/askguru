@@ -22,52 +22,12 @@
   
   onMount(() => {
     fetchQuestion();
+    incrementQuestionViewCount();
   });
 
   afterUpdate(() => {
     hljs.highlightAll();
   });
-
-  function handleOnRelatedSearch(event) {
-    isLoading = true;
-    questionId = event.detail.questionId;
-    questionTitle = event.detail.questionTitle;
-    changeWindowTitle(questionTitle);
-    fetchQuestion();
-  }
-
-  function fetchRelatedQuestions() {
-    // isLoading = true;
-    //
-    // const site = `${$i18n.code}stackoverflow`;
-    // const uri = `${uriSegments.baseUri}/questions/${questionId}/related?order=desc&sort=activity&site=${site}&filter=${uriSegments.relatedQuestionsFilter}&key=${uriSegments.key}`;
-    //
-    // axios.get(uri).then(response => {
-    //   isLoading = false;
-    //   if (response.status === 200) {
-    //     relatedQuestions = response.data.items;
-    //     showProgress("stop", null, false);
-    //   } else {
-    //     showProgress("stop", null, true);
-    //   }
-    // });
-  }
-
-  // function fetchQuestion() {
-  //   showProgress("start", "Loading Search Results", false);
-  //   const site = `${$i18n.code}stackoverflow`;
-  //   const uri = `${uriSegments.baseUri}/questions/${questionId}?site=${site}&filter=${uriSegments.questionFilter}&key=${uriSegments.key}`;
-  //
-  //   axios.get(uri).then(response => {
-  //     isLoading = false;
-  //     if (response.status === 200) {
-  //       question = response.data.items[0];
-  //       fetchRelatedQuestions();
-  //     } else {
-  //       showProgress("stop", null, true);
-  //     }
-  //   });
-  // }
 
   function fetchQuestion() {
     showProgress("start", "Loading Search Results", false);
@@ -99,6 +59,22 @@
       });
   }
 
+  function incrementQuestionViewCount() {
+    const apiBaseUrl = $appConfigStore.apiBaseUrl;
+    const authToken = $authStore;
+    const qaboxUrl = `${apiBaseUrl}/api/common/increase-questionViewCount`;
+    let reqInstance = axios.create({
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    let question = {
+      questionId: questionId
+    }
+    reqInstance.post(qaboxUrl, question);
+  }
+
 
 </script>
 
@@ -115,15 +91,7 @@
     height: 70px;
     margin-bottom: 30px;
   }
-  .view-online {
-    width: 100%;
-    align-self: center;
-  }
-  .view-online a {
-    cursor: pointer;
-    float: left;
-    margin-top: 38px;
-  }
+
   iframe {
     min-height: 500px;
     min-width: 500px;
@@ -135,7 +103,6 @@
 {/if}
 
 <QuestionTitle
-  on:relatedQuestionSearch={handleOnRelatedSearch}
   title={questionTitle}
   creationDate={question && question.createdAtTime}
   lastActivityDate={question && question.modifiedAtTime}
@@ -152,7 +119,7 @@
 
     <div slot="left">
       <QuestionIndices
-        score={question.upVotes}
+        score={question.totalVotes}
         favorite={question.viewed} />
     </div>
 
@@ -169,27 +136,11 @@
       {/if}
 
       <div class="question-answer-bottom">
-<!--        <div class="view-online">-->
-<!--          <a href={question.link} target="_blank">{$i18n.text.view_online}</a>-->
-<!--        </div>-->
-
        <User
          user={{link:"", profile_image:"", display_name:question.creatorName, reputation:0}}
          createdDate={question.createdAtTime}
          isQuestion={true} />
       </div>
-
-      <!--{#if question.closed_details}-->
-      <!--  <QuestionClosed-->
-      <!--    details={question.closed_details}-->
-      <!--    reason={question.closed_reason}-->
-      <!--    closedDate={question.closed_date} />-->
-      <!--{/if}-->
-
-      <!--{#if question.notice}-->
-      <!--  <QuestionNotice notice={question.notice} />-->
-      <!--{/if}-->
-
       {#if question.comments}
        <Comments comments={question.comments} />
       {/if}

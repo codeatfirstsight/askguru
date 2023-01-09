@@ -49,7 +49,7 @@
     margin-left: 12px;
   }
 </style>
-<div style="display: flex; justify-content: space-between;">
+<div style="display: flex; justify-content: space-between;margin-bottom: 30px;">
   <h3 class="text-capitalize">
     Ask
     <strong>Guru</strong>

@@ -72,7 +72,7 @@
 </style>
 
 
-<div style="display: flex; justify-content: space-between;">
+<div style="display: flex; justify-content: space-between;margin-bottom: 30px;">
   {#if $section === 'question' || $section === 'tag'}
     <div class="back text-capitalize" on:keypress={goBack} on:click={goBack}>
       <span />

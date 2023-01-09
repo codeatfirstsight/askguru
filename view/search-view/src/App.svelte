@@ -12,7 +12,6 @@
   import Header from "./common/Header.svelte";
   import Question from "./question/Question.svelte";
   import Search from "./search/Search.svelte";
-  import Tag from "./tag/tag.svelte";
   import { onMount } from "svelte";
   import SearchInput from "./search/SearchInput.svelte";
   import Loader from "./common/Loader.svelte";
@@ -110,71 +109,6 @@
     }
   }
 
-  function handleFilterChangeSearch() {
-    page.set(1);
-    !selectedTag ? search() : tagSearch(selectedTag);
-  }
-
-  function handleTagFromQuestionSearch(event) {
-    section.set("search");
-    handleTagSelected(event);
-  }
-
-  // Search by selected tag - Only gets the wiki info -
-  // Full search still needs to be done based on tag name with added property &tagged= to uri
-  function handleTagSelected(event) {
-    showProgress("start", "Loading Tag Results", false);
-    isLoading = true;
-    window.scroll({ top: 0, behavior: "smooth" });
-    selectedTag = event.detail.tag;
-    page.set(1);
-
-    const site = `${$i18n.code}stackoverflow`;
-    const uri = `${uriSegments.baseUri}/tags/${selectedTag}/wikis?site=${site}&filter=${uriSegments.tagFilter}&key=${uriSegments.key}`;
-
-    axios
-      .get(uri)
-      .then((response) => {
-        if (response.status === 200) {
-          tagData = response.data.items[0];
-          tagSearch(selectedTag);
-        } else {
-          isLoading = false;
-          showProgress("stop", null, true);
-        }
-      })
-      .catch(() => {
-        isLoading = false;
-        showProgress("stop", null, true);
-      });
-  }
-
-  function tagSearch(selectedTag) {
-    isLoading = true;
-    changeWindowTitle(`[${selectedTag}]`);
-    searchQuery.set(`[${selectedTag}]`);
-
-    const site = `${$i18n.code}stackoverflow`;
-    const uri = `${uriSegments.baseUri}/search/advanced?tagged=${selectedTag}&page=${$page}&pagesize=10&order=${$selectedSearchFilter.apiOrder}&sort=${$selectedSearchFilter.apiSort}&site=${site}&filter=${uriSegments.searchFilter}&key=${uriSegments.key}`;
-
-    axios
-      .get(uri)
-      .then((response) => {
-        isLoading = false;
-        if (response.status === 200) {
-          searchData = response.data.items;
-          totalResults = response.data.total;
-          showProgress("stop", null, false);
-        } else {
-          showProgress("stop", null, true);
-        }
-      })
-      .catch(() => {
-        isLoading = false;
-        showProgress("stop", null, true);
-      });
-  }
-
   // Main search functionality
 
   function initSearch() {
@@ -256,11 +190,8 @@
     {#if $section === "search"}
       <Search
         on:gotoQuestion={handleGotoQuestion}
-        on:gotoTagLearnMore={() => section.set("tag")}
-        on:searchByTag={handleTagSelected}
         on:searchInput={searchFromSearchInput}
         on:searchByPage={handlePageSearch}
-        on:filterChange={handleFilterChangeSearch}
         {isLoading}
         {searchData}
         {tagData}
@@ -269,14 +200,11 @@
       />
     {:else if $section === "question"}
       <Question
-        on:searchByTag={handleTagFromQuestionSearch}
         {questionId}
         {questionTitle}
         {extensionAction}
         {gif}
       />
-    {:else if $section === "tag"}
-      <Tag {tagData} />
     {/if}
 {/if}
 

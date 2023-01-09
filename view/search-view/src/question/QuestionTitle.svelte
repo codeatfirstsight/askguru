@@ -1,24 +1,16 @@
 <script>
-  import { createEventDispatcher } from "svelte";
   import { fade } from "svelte/transition";
   import { i18n } from "../stores/i18n.js";
   import { formatNumber } from "../stores/common.js";
   import { timeAgo } from "../stores/format-date.js";
-  import QuestionsRelated from "./QuestionsRelated.svelte";
 
   export let title;
   export let creationDate;
   export let lastActivityDate;
   export let viewCount;
-  export let extensionAction;
-  export let relatedQuestions;
-  let showRelatedQuestions;
 
   $: totalViews = formatNumber(viewCount);
 
-  function toggleRelatedQuestions() {
-    showRelatedQuestions = !showRelatedQuestions;
-  }
 </script>
 
 <style>

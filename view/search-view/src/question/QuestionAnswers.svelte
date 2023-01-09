@@ -41,7 +41,7 @@
 
         <div slot="left">
           <QuestionAnswerIndicies
-            score={answer.upVotes}
+            score={answer.totalVotes}
             isAccepted={answer.accepted} />
         </div>
 
