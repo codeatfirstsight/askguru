@@ -14,4 +14,10 @@ export class AppState {
   static findState<T>(key: string): T {
     return this.globalState.get(key) as T;
   }
+
+  static clearState(key: string) {
+    if(this.globalState.get(key)) {
+      this.globalState.update(key, undefined);
+    }
+  }
 }

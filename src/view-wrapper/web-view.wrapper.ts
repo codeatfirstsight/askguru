@@ -109,7 +109,7 @@ export class WebviewWrapper {
         <head>
           <meta charset='utf8'>
           <meta name='viewport' content='width=device-width'>
-          <meta http-equiv="Content-Security-Policy" content="default-src 'self';frame-src https://giphy.com/; connect-src ${appConfig.apiBaseUrl}; img-src * 'self' data: vscode-resource: https:; script-src  vscode-resource: https://unpkg.com/ 'nonce-${nonce}'; style-src vscode-resource: https://unpkg.com/ https://fonts.cdnfonts.com/ 'unsafe-inline';" />
+          <meta http-equiv="Content-Security-Policy" content="default-src 'self';frame-src https://giphy.com/; connect-src ${appConfig.apiBaseUrl}; img-src * 'self' data: vscode-resource: https:; script-src  vscode-resource: https://unpkg.com/ 'nonce-${nonce}'; style-src vscode-resource: https://unpkg.com/  https://fonts.cdnfonts.com/ 'unsafe-inline'; font-src https://fonts.cdnfonts.com/ " />
           <title> AskGuru View </title>
           <link rel="stylesheet" href="https://unpkg.com/@stackoverflow/stacks-editor/dist/styles.css">  
           <link href="https://fonts.cdnfonts.com/css/roboto" rel="stylesheet">                      

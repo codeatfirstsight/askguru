@@ -11,10 +11,9 @@ import axios from 'axios';
 
 
 export function activate(context: vscode.ExtensionContext) {
-  let appConfig = JsonReader.read<AppConfig>(context, "config", "app-config.json");
-
   TokenManager.globalState = context.globalState;
   AppState.globalState = context.globalState;
+  let appConfig = initAppConfig(context);
 
   AppState.setState('currentView', 'searchView');
 
@@ -38,6 +37,15 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(uriHandler);
 }
 
+function initAppConfig(context: vscode.ExtensionContext) {
+  let appConfig = JsonReader.read<AppConfig>(context, "config", "app-config.json");
+  const appConfigJsonString = AppState.findState("appConfig") as string;
+  if(appConfigJsonString) {
+    appConfig = JSON.parse(appConfigJsonString);
+  }
+  return appConfig;
+}
+
 //register the extension redirect URI vscode://codeatfirstsight.askguru (we can hit this URL from browser and the control will come in below handler)
 function registerRedirectionUri(appConfig: AppConfig, currentView:string, context: vscode.ExtensionContext) {
   const handleUri = (uri: vscode.Uri) => {
@@ -56,11 +64,12 @@ function registerRedirectionUri(appConfig: AppConfig, currentView:string, contex
 
         axios
         .get(appConfigUrl, headers)
-        .then((response) => {
+        .then((response : any) => {
             if (response.status === 200) {
               appConfig= response.data;
               const userName = queryParams.get('userName')  as string;
               AppState.setState("userName", userName);
+              AppState.setState("appConfig", JSON.stringify(appConfig));
               vscode.window.showInformationMessage(`Hi ${userName}, welcome to the Ask Guru.`)
               TokenManager.setToken(accessToken);
               reloadWindowPanel(appConfig, currentView, context);
@@ -87,6 +96,8 @@ function registerTokenInvalidation(appConfig: AppConfig, command:string, current
       .then(answer => {
         if (answer === "Yes") {
           TokenManager.clearToken();
+          AppState.clearState("userName");
+          AppState.clearState("appConfig");
           reloadWindowPanel(appConfig, currentView, context);
         }
       })
