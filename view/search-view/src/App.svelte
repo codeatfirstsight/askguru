@@ -220,7 +220,7 @@
     };
     let reqInstance = axios.create({
       headers: {
-        Authorization: `Bearer ${authToken}`,
+        authorization: `Bearer ${authToken}`,
       },
     });
 

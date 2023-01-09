@@ -60,6 +60,7 @@ export class SidebarViewWrapper implements vscode.WebviewViewProvider {
     }
 
     private _getHtmlForWebview(webview: vscode.Webview) {
+        const appConfig = this._config;
         const styleResetUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this._extensionUri, "media", "reset.css")
         );
@@ -86,7 +87,7 @@ export class SidebarViewWrapper implements vscode.WebviewViewProvider {
                         Use a content security policy to only allow loading images from https or from our extension directory,
                         and only allow scripts that have a specific nonce.
             -->
-            <meta http-equiv="Content-Security-Policy" content="default-src 'self';frame-src https://giphy.com/; connect-src http://localhost:8088; img-src * 'self' data: vscode-resource: https:; script-src vscode-resource: https://unpkg.com/ 'nonce-${nonce}'; style-src vscode-resource: https://unpkg.com/ https://fonts.cdnfonts.com/ 'unsafe-inline';" />
+            <meta http-equiv="Content-Security-Policy" content="default-src 'self';frame-src https://giphy.com/; connect-src ${appConfig.apiBaseUrl}; img-src * 'self' data: vscode-resource: https:; script-src vscode-resource: https://unpkg.com/ 'nonce-${nonce}'; style-src vscode-resource: https://unpkg.com/ https://fonts.cdnfonts.com/ 'unsafe-inline';" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <link href="${styleResetUri}" rel="stylesheet">
             <link href="${styleVSCodeUri}" rel="stylesheet">

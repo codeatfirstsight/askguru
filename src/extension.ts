@@ -6,6 +6,7 @@ import { changeWindowTitle, windowMessage, windowProgress } from './helper/vscod
 import { AppConfig } from './model/app-config.model';
 import { JsonReader } from './helper/json-reader.helper';
 import { AppState } from './helper/app-state.helper';
+import axios from 'axios';
 
 
 
@@ -43,11 +44,29 @@ function registerRedirectionUri(appConfig: AppConfig, currentView:string, contex
     currentView = findCurrentView();
 		const queryParams = new URLSearchParams(uri.query);
 		if (queryParams.has('accessToken') && queryParams.get('accessToken') as string !== '') {
-      const userName = queryParams.get('userName')  as string;
-      AppState.setState("userName", userName);
-      vscode.window.showInformationMessage(`Hi ${userName}, welcome to the Ask Guru.`)
-			TokenManager.setToken(queryParams.get('accessToken') as string);
-      reloadWindowPanel(appConfig, currentView, context);
+      const accessToken = queryParams.get('accessToken') as string;
+      if (queryParams.has('appConfigUrl') && queryParams.get('appConfigUrl') as string !== '') {
+        const appConfigUrl = queryParams.get('appConfigUrl') as string;
+        var headers = {
+          withCredentials: true,
+          headers: {
+              Authorization: `Bearer ${accessToken}`,
+          },
+        };
+
+        axios
+        .get(appConfigUrl, headers)
+        .then((response) => {
+            if (response.status === 200) {
+              appConfig= response.data;
+              const userName = queryParams.get('userName')  as string;
+              AppState.setState("userName", userName);
+              vscode.window.showInformationMessage(`Hi ${userName}, welcome to the Ask Guru.`)
+              TokenManager.setToken(accessToken);
+              reloadWindowPanel(appConfig, currentView, context);
+            }
+        });
+      }
 		}
     else {
       vscode.window.showErrorMessage("Authentication failed please reauthenticate from Ask Guru website.")

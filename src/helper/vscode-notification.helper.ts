@@ -15,22 +15,17 @@ function showWindowProgress(panel: vscode.WebviewPanel, title: string) {
         location: vscode.ProgressLocation.Window,
         title: title
     }, (progress, token) => {
-
         const progressPromise = new Promise(resolve => {
-        panel.webview.onDidReceiveMessage(message => {
-
-            if (message.command === 'progress' && message.action === 'stop') {
-            resolve(null);
-            if (message.error) {
-                vscode.window.showErrorMessage(message.errorMessage);
-            }
-            }
-
+            panel.webview.onDidReceiveMessage(message => {
+                if (message.command === 'progress' && message.action === 'stop') {
+                    resolve(null);
+                    if (message.error) {
+                        vscode.window.showErrorMessage(message.errorMessage);
+                    }
+                }
+            });
         });
-        });
-
         return progressPromise;
-
     });
 }
   
