@@ -1,13 +1,8 @@
 
 <script>
-  import { uriSegments } from "./stores/static-models.js";
   import { languages, i18n } from "./stores/i18n.js";
   import { page, section, searchQuery, authStore, userNameStore, appConfigStore } from "./stores/common.js";
   import { showProgress, changeWindowTitle, postMessage } from "./helpers/vscode-api.helper";
-  import {
-    selectedSearchFilter,
-    resultFilters,
-  } from "./stores/results-filter.js";
   import axios from "axios";
   import Header from "./common/Header.svelte";
   import Question from "./question/Question.svelte";
@@ -40,7 +35,6 @@
     messageEventRecieved = true;
     extensionAction = event.data.action;
     if (event.data.action === "init") {
-      console.log('addEventListener', event)
       isLoading = false;
       authStore.set(event.data.accessToken);
       userNameStore.set(event.data.userName);
@@ -48,11 +42,6 @@
       userAuthenticated = $authStore;
       // Set language
       $i18n = $languages.find((_) => _.language === event.data.language);
-      // Find & set sort filter
-      const searchFilterToSetAsSelected = resultFilters.find(
-        (_) => _.label === event.data.sortType
-      );
-      selectedSearchFilter.set(searchFilterToSetAsSelected);
       // Set section
       section.set("init");
     }
@@ -64,11 +53,6 @@
       searchQuery.set(event.data.query);
       // Set language
       $i18n = $languages.find((_) => _.language === event.data.language);
-      // Find & set sort filter
-      const searchFilterToSetAsSelected = resultFilters.find(
-        (_) => _.label === event.data.sortType
-      );
-      selectedSearchFilter.set(searchFilterToSetAsSelected);
       // Set section
       section.set("search");
 
@@ -78,12 +62,8 @@
 
   onMount(() => {
     postMessage('onMount', "searchView");
-    if(!$section || !$selectedSearchFilter || !messageEventRecieved) {
+    if(!$section || !messageEventRecieved) {
       $i18n = $languages[0];
-      const searchFilterToSetAsSelected = resultFilters.find(
-        _ => _.label === 'Newest'
-      );
-      selectedSearchFilter.set(searchFilterToSetAsSelected);
     }
   });
 

@@ -220,8 +220,6 @@ function windowPanelSvelteLifecycleListener(panel: vscode.WebviewPanel, appConfi
 //send message event to the webview (svelte apps)
 function sendMessageEvent(panel: vscode.WebviewPanel, viewName:string, appConfig: AppConfig) {
   const currentLanguageSelection = vscode.workspace.getConfiguration().get('askguru.view.language');
-  // Get sort type
-  const currentSortTypeSelection = vscode.workspace.getConfiguration().get('askguru.view.sort');
   if(viewName === "askView") {
     panel.webview.postMessage({
       action: 'ask',
@@ -235,7 +233,6 @@ function sendMessageEvent(panel: vscode.WebviewPanel, viewName:string, appConfig
     panel.webview.postMessage({
       action: 'init',
       language: currentLanguageSelection,
-      sortType: currentSortTypeSelection,
       accessToken: TokenManager.getToken(),
       userName: AppState.findState("userName"),
       appConfig: appConfig

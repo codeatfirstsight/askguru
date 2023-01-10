@@ -1,12 +1,6 @@
 <script>
-  import { createEventDispatcher, onDestroy } from "svelte";
-  import { i18n, languages } from "../stores/i18n.js";
+  import { i18n } from "../stores/i18n.js";
   import { formatNumber, section } from "../stores/common.js";
-  import {
-    resultFilters,
-    selectedSearchFilter,
-    selectedAnswerFilter
-  } from "../stores/results-filter.js";
 
   export let results;
   export let isLoading;

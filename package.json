@@ -1,14 +1,25 @@
 {
   "name": "askguru",
   "publisher": "codeatfirstsight",
-  "displayName": "askguru",
-  "description": "Ask questions",
+  "displayName": "AskGuru",
+  "description": "Vscode integrated solution for asking , searching and finding answers in Askguru",
   "version": "0.0.1",
+  "icon": "assets/logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codeatfirstsight/askguru-vsx"
+  },
   "engines": {
     "vscode": "^1.74.0"
   },
   "categories": [
     "Other"
+  ],
+  "keywords": [
+    "Ask Guru",
+    "askguru",
+    "Answers",
+    "Questions"
   ],
   "activationEvents": [
     "onCommand:askguru.search",
@@ -63,18 +74,6 @@
             ],
             "default": "English",
             "description": "Select your preferred language.",
-            "scope": "window"
-          },
-          "askguru.view.sort": {
-            "type": "string",
-            "enum": [
-              "Relevance",
-              "Newest",
-              "Active",
-              "Votes"
-            ],
-            "default": "Relevance",
-            "description": "Select your preferred sort type for returned search results.",
             "scope": "window"
           }
         }
