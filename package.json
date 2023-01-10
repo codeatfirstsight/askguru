@@ -3,7 +3,7 @@
   "publisher": "codeatfirstsight",
   "displayName": "AskGuru",
   "description": "Vscode integrated solution for asking , searching and finding answers in Askguru",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "icon": "assets/logo.png",
   "repository": {
     "type": "git",
