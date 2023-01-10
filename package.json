@@ -81,11 +81,6 @@
     ],
     "keybindings": [
       {
-        "command": "askguru.search",
-        "key": "ctrl+alt+s",
-        "mac": "ctrl+cmd+s"
-      },
-      {
         "command": "askguru.invalidateToken",
         "key": "ctrl+alt+r",
         "mac": "ctrl+cmd+r"
