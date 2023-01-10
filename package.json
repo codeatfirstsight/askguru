@@ -7,7 +7,7 @@
   "icon": "assets/logo.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/codeatfirstsight/askguru-vsx"
+    "url": "https://github.com/codeatfirstsight/askguru.git"
   },
   "engines": {
     "vscode": "^1.74.0"

@@ -31,7 +31,7 @@ function showErrorMessage(message) {
   });
 }
 
-function showLaunchLoginPageAuthErrorMessage(message) {
+function showLaunchLoginPageAuthErrorMessage(message, apiUrl) {
   vscode.postMessage({
     type: "actionableError",
     actionableButtons: {
@@ -40,7 +40,7 @@ function showLaunchLoginPageAuthErrorMessage(message) {
         {
           buttonName : "Authenticate",
           actionType: "link",
-          link: "http://localhost:3000"
+          link: apiUrl
         }
       ]
     }
