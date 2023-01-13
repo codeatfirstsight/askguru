@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher, onMount } from "svelte";
-  import { showLaunchLoginPageAuthErrorMessage } from "../helpers/vscode-api.helper.js";
+  import { showLaunchLoginPageAuthErrorMessage, showErrorMessage } from "../helpers/vscode-api.helper.js";
   import { page, searchQuery, authStore, appConfigStore } from "../stores/common.js";
   import { i18n, languages } from "../stores/i18n.js";
 
@@ -11,7 +11,13 @@
 
   onMount(() => {
     if(!userAuthenticated && !$authStore) {
-      showLaunchLoginPageAuthErrorMessage("You must be authorized to search questions on Ask Guru.", $appConfigStore.appAuthUrl);
+      const errorMessage = "You must be authorized to search questions on Ask Guru."
+      if($appConfigStore.appAuthUrl) {
+        showLaunchLoginPageAuthErrorMessage(errorMessage, $appConfigStore.appAuthUrl);
+      }
+      else {
+          showErrorMessage(errorMessage);
+      }      
     }
     searchQueryPreviousValue = $searchQuery;
     if(initialSearch) {

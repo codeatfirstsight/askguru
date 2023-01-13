@@ -23,7 +23,13 @@
 
     onMount(()=> {
         if(!userAuthenticated) {
-            showLaunchLoginPageAuthErrorMessage("You must be authorized to ask questions on Ask Guru.", $appConfigStore.appAuthUrl);
+            const errorMessage = "You must be authorized to ask questions on Ask Guru."
+            if($appConfigStore.appAuthUrl) {
+                showLaunchLoginPageAuthErrorMessage(errorMessage, $appConfigStore.appAuthUrl);
+            }
+            else {
+                showErrorMessage(errorMessage);
+            }            
         }
         stacksEditor = new StacksEditor(
             document.querySelector("#editor-container"),

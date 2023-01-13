@@ -1,4 +1,4 @@
 {
-    "apiBaseUrl": "http://localhost:8080",
-    "appAuthUrl": "http://localhost:3000"
+    "apiBaseUrl": null,
+    "appAuthUrl": null
 }

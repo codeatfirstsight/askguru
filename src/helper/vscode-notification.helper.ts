@@ -70,9 +70,9 @@ function showActionalbleErrorMessage(actionableButtons: ActionableButtons) {
     .then(selection => {
         let selectedButton = actionableButtons.actions.find(actionableButton => actionableButton.buttonName === selection);
         if(selectedButton) {
-        if( selectedButton.actionType === 'link') {
-            vscode.env.openExternal(vscode.Uri.parse(selectedButton.link!));
-        }
+            if( selectedButton.actionType === 'link') {
+                vscode.env.openExternal(vscode.Uri.parse(selectedButton.link!));
+            }
         }
     });
 }
