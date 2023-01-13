@@ -11,7 +11,7 @@
 
   onMount(() => {
     if(!userAuthenticated && !$authStore) {
-      showLaunchLoginPageAuthErrorMessage("You must be authorized to search questions on Ask Guru.", $appConfigStore.apiBaseUrl);
+      showLaunchLoginPageAuthErrorMessage("You must be authorized to search questions on Ask Guru.", $appConfigStore.appAuthUrl);
     }
     searchQueryPreviousValue = $searchQuery;
     if(initialSearch) {
