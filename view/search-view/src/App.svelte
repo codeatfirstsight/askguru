@@ -32,7 +32,6 @@
    * sortType: currentSortTypeSelection // user settings configuation
    */
   window.addEventListener("message", (event) => {
-    messageEventRecieved = true;
     extensionAction = event.data.action;
     if (event.data.action === "init") {
       isLoading = false;
@@ -44,6 +43,7 @@
       $i18n = $languages.find((_) => _.language === event.data.language);
       // Set section
       section.set("init");
+      messageEventRecieved = true;
     }
     else if (event.data.action === "search") {
       authStore.set(event.data.accessToken);
@@ -55,6 +55,7 @@
       $i18n = $languages.find((_) => _.language === event.data.language);
       // Set section
       section.set("search");
+      messageEventRecieved = true;
 
       search();
     }

@@ -1,6 +1,6 @@
 <script>
 	import { fade } from 'svelte/transition';
-	import { i18n } from './../stores/i18n.js';
+	import { i18n, languages } from './../stores/i18n.js';
 	import { StacksEditor } from '@stackoverflow/stacks-editor';
     import "@stackoverflow/stacks-editor/dist/styles.css";
     // include the Stacks js and css as they're not included in the bundle
@@ -23,19 +23,16 @@
 
     onMount(()=> {
         if(!userAuthenticated) {
-            const errorMessage = "You must be authorized to ask questions on Ask Guru."
-            if($appConfigStore.appAuthUrl) {
-                showLaunchLoginPageAuthErrorMessage(errorMessage, $appConfigStore.appAuthUrl);
-            }
-            else {
-                showErrorMessage(errorMessage);
-            }            
+            showLaunchLoginPageAuthErrorMessage("You must be authorized to ask questions on Ask Guru.");
         }
         stacksEditor = new StacksEditor(
             document.querySelector("#editor-container"),
             "",
             {}
         );
+        if(!$i18n) {
+            $i18n = $languages[0];
+        }
     })
 
     function remove(tagName) {
@@ -135,13 +132,12 @@
             <div class="d-flex gs4 gsy fd-column js-stacks-validation">
                 <div class="d-flex fd-column flex--item">
                     <div class="flex--item">
-                        <label for="title" class="s-label"> Title </label>
+                        <label for="title" class="s-label"> {$i18n.text.title}  </label>
                     </div>
                     <div class="d-flex flex--item md:fd-column">
                         <div class="s-description flex--item9 my2">
                             <label for="title">
-                                Be specific and imagine you're asking a question to
-                                another person.
+                                {$i18n.text.be_specific}
                             </label>
                         </div>
                         <div
@@ -155,7 +151,7 @@
                         name="title"
                         type="text"
                         maxlength="300"
-                        placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
+                        placeholder={$i18n.text.title_placeholder}
                         class="s-input js-post-title-field ask-title-field"
                         bind:value={title}
                         data-min-length="15"
@@ -186,10 +182,9 @@
                 <div class="d-flex gs4 gsy fd-column js-stacks-validation">
                     <div class="flex--item">
                         <label for="problem-details" class="d-block s-label">
-                            What are the details of your problem?
+                            {$i18n.text.question_details}
                             <p class="s-description mt2 mb6">
-                                Introduce the problem and expand on what you put in
-                                the title. Minimum 20 characters.
+                                {$i18n.text.question_details_subtext}
                             </p>
                         </label>
                     </div>
@@ -207,12 +202,12 @@
             <div class="d-flex gs4 gsy fd-column js-stacks-validation">
                 <div class="d-flex fd-column flex--item">
                     <div class="flex--item">
-                        <label for="title" class="s-label"> Tags </label>
+                        <label for="title" class="s-label"> {$i18n.text.tags} </label>
                     </div>
                     <div class="d-flex flex--item md:fd-column">
                         <div class="s-description flex--item9 my2">
                             <label for="title">
-                                Add the relevant tags for your questions.
+                                {$i18n.text.tag_subtext}
                             </label>
                         </div>
                         <div
@@ -259,8 +254,8 @@
                 class="s-btn s-btn__primary mt12 js-next-problem-details js-next-buttons"
                 on:click={handleAskQuestion}
                 disabled={!userAuthenticated}
-                type="button">Post your question</button
-            >
+                type="button">{$i18n.text.post_question}
+            </button>
         </div>
     </div>
 </section>

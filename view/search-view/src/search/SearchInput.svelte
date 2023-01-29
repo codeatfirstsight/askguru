@@ -20,7 +20,7 @@
       }      
     }
     searchQueryPreviousValue = $searchQuery;
-    if(initialSearch) {
+    if(!$i18n) {
       $i18n = $languages[0];
     }
   });

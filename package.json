@@ -67,10 +67,7 @@
             "type": "string",
             "enum": [
               "English",
-              "Spanish",
-              "Russian",
-              "Portuguese",
-              "Japanese"
+              "German"
             ],
             "default": "English",
             "description": "Select your preferred language.",
@@ -102,7 +99,7 @@
     "search-view-init": "npm install --prefix  view/search-view",
     "sidebar-view-init": "npm install --prefix  view/sidebar-view",
     "npm-init-views": "concurrently \"npm run ask-view-init\" \"npm run search-view-init\" \"npm run sidebar-view-init\" ",
-    "boot": "npm run init && npm run build",
+    "boot": "npm install && npm run init && npm run build",
     "init": "concurrently \"npm run npm-init-views\" \"npm install\" ",
     "build": "concurrently \"npm run build-views\" \"npm run compile\" "
   },
