@@ -72,6 +72,18 @@
             "default": "English",
             "description": "Select your preferred language.",
             "scope": "window"
+          },
+          "askguru.baseUrl": {
+            "type": "string",
+            "default": "http://localhost:8088",
+            "description": "Application base url.",
+            "scope": "window"
+          },
+          "askguru.appAuthUrl": {
+            "type": "string",
+            "default": "http://localhost:3000",
+            "description": "Application auth url",
+            "scope": "window"
           }
         }
       }

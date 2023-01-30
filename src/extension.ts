@@ -43,6 +43,12 @@ function initAppConfig(context: vscode.ExtensionContext) {
   if(appConfigJsonString) {
     appConfig = JSON.parse(appConfigJsonString);
   }
+  if(!appConfig.apiBaseUrl) {
+    appConfig.apiBaseUrl = vscode.workspace.getConfiguration().get('askguru.baseUrl') as string;
+  }
+  if(!appConfig.appAuthUrl) {
+    appConfig.appAuthUrl = vscode.workspace.getConfiguration().get('askguru.appAuthUrl') as string;
+  }
   return appConfig;
 }
 

@@ -97,6 +97,12 @@ export class WebviewWrapper {
 
   private _getHtmlForWebview(appConfig: AppConfig, activeColorTheme: vscode.ColorTheme, viewPath: string, context: vscode.ExtensionContext, webview: vscode.Webview) {
     // // And the uri we use to load this script in the webview   
+    if(!appConfig.apiBaseUrl) {
+      appConfig.apiBaseUrl = vscode.workspace.getConfiguration().get('askguru.baseUrl') as string;
+    }
+    if(!appConfig.appAuthUrl) {
+      appConfig.appAuthUrl = vscode.workspace.getConfiguration().get('askguru.appAuthUrl') as string;
+    }
     const nonce = generateNonce(); 
     const cssBundle = webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, "view", viewPath, "dist", "index.css"));  
     const jsFile = webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, "view", viewPath, "dist", "index.js"));
